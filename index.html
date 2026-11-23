@@ -1,0 +1,1333 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Стратегия Reels — стратсессия 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Manrope:wght@400;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F25A1E; --orange-2:#FF7A3D; --ink:#141210; --ink-2:#2A2622;
+  --paper:#F1EEE9; --paper-2:#E4E0D9; --muted:#6B655E; --muted-d:#B9B2A9; --white:#FFFFFF;
+  --f-head:"Oswald","Arial Narrow",Impact,sans-serif;
+  --f-body:"Manrope","Helvetica Neue",Arial,sans-serif;
+  --f-hand:"Caveat","Segoe Print","Comic Sans MS",cursive;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0b0a09;overflow:hidden}
+body{font-family:var(--f-body);color:var(--ink)}
+#viewport{position:fixed;inset:0;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;transform:translate(-50%,-50%)}
+html:has(body.ov),body.ov{overflow:auto;height:auto}
+body.ov #viewport{position:static;overflow:visible}
+body.ov #stage{position:static;transform:none!important;width:auto;height:auto;display:flex;flex-wrap:wrap;gap:6px;padding:6px}
+body.ov .s{position:relative;width:1920px;height:1080px;opacity:1;visibility:visible;zoom:.19;cursor:pointer}
+body.ov .s .step{opacity:1;transform:none}
+.s{position:absolute;inset:0;overflow:hidden;opacity:0;visibility:hidden;transition:opacity .4s ease,visibility 0s .4s}
+.s.on{opacity:1;visibility:visible;transition:opacity .4s ease,visibility 0s}
+/* backgrounds */
+.light{background:
+  radial-gradient(120% 90% at 70% 10%,#ffffff 0%,rgba(255,255,255,0) 60%),
+  radial-gradient(80% 70% at 10% 100%,#d9d4cc 0%,rgba(217,212,204,0) 70%),
+  linear-gradient(115deg,#f4f2ee 0%,#e7e3dc 45%,#f6f4f0 60%,#e2ddd5 100%);color:var(--ink)}
+.dark{background:
+  radial-gradient(70% 60% at 85% 20%,rgba(242,90,30,.28) 0%,rgba(242,90,30,0) 70%),
+  radial-gradient(90% 80% at 0% 100%,#2b1a12 0%,rgba(43,26,18,0) 70%),
+  #141210;color:#F6F2EC}
+.orange{background:radial-gradient(90% 90% at 80% 10%,#ff7a3d 0%,#F25A1E 55%,#d9470f 100%);color:#fff}
+/* chrome */
+.tag{position:absolute;left:96px;top:64px;font:600 24px/1 var(--f-body);letter-spacing:.04em;opacity:.7;z-index:20}
+.brand{position:absolute;right:96px;top:58px;font:700 26px/1 var(--f-head);letter-spacing:.12em;z-index:20}
+.brand b{color:var(--orange)}
+.orange .brand b{color:var(--ink)}
+.num{position:absolute;right:96px;bottom:52px;font:600 24px/1 var(--f-body);opacity:.55;z-index:20}
+/* type */
+.h{font-family:var(--f-head);font-weight:700;text-transform:uppercase;line-height:.92;letter-spacing:-.005em;margin:0}
+.xxl{font-size:300px}.xl{font-size:200px}.l{font-size:140px}.m{font-size:100px}.sm{font-size:72px}
+.lead{font:500 44px/1.3 var(--f-body);margin:0}
+.lead.s40{font-size:40px}
+.mut{color:var(--muted)}.dark .mut{color:var(--muted-d)}
+.o{color:var(--orange)}.orange .o{color:var(--ink)}
+.hand{font-family:var(--f-hand);font-weight:700;color:var(--orange);line-height:1}
+.ghost{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);font:700 560px/0.8 var(--f-head);text-transform:uppercase;white-space:nowrap;color:rgba(20,18,16,.07);pointer-events:none;z-index:0}
+.dark .ghost{color:rgba(255,255,255,.05)}
+.orange .ghost{color:rgba(255,255,255,.12)}
+.abs{position:absolute}.z{z-index:5}
+.pill{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:10px 26px;font:700 26px/1 var(--f-body)}
+.dark .pill{background:#fff;color:var(--ink)}
+.pill.or{background:var(--orange);color:#fff}
+/* cards */
+.card{position:absolute;background:#fff;color:var(--ink);border-radius:6px;padding:34px 38px;box-shadow:0 30px 60px -25px rgba(0,0,0,.35);z-index:6}
+.card .h{font-size:64px}
+.card p{font:500 32px/1.35 var(--f-body);margin:14px 0 0}
+.polaroid{position:absolute;background:#fff;padding:16px 16px 70px;box-shadow:0 34px 60px -20px rgba(0,0,0,.45);z-index:6}
+.polaroid img{display:block;width:100%;height:100%;object-fit:cover}
+.polaroid .cap{position:absolute;left:0;right:0;bottom:12px;text-align:center;font:700 44px/1 var(--f-hand);color:var(--ink)}
+.frame{position:absolute;overflow:hidden;border-radius:4px;box-shadow:0 30px 60px -25px rgba(0,0,0,.45);z-index:5;background:#000}
+.frame img{width:100%;height:100%;object-fit:cover;display:block}
+.cut{position:absolute;z-index:4;pointer-events:none}
+.cut img{display:block;width:100%;height:auto}
+.oblock{position:absolute;background:var(--orange);z-index:1}
+/* chat bubble */
+.chat{position:absolute;left:260px;right:260px;top:430px;background:#fff;color:var(--ink);border-radius:36px;padding:44px 56px 48px 150px;box-shadow:0 30px 60px -25px rgba(0,0,0,.4);z-index:6}
+.chat:before{content:"";position:absolute;left:52px;top:46px;width:68px;height:68px;border-radius:50%;background:var(--orange)}
+.chat .who{font:700 28px/1 var(--f-body);color:var(--muted);margin-bottom:18px}
+.chat .q{font:700 54px/1.18 var(--f-body)}
+/* lists */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:26px}
+.steps li{display:grid;grid-template-columns:150px 1fr;align-items:baseline;font:600 46px/1.25 var(--f-body)}
+.steps li b{font:700 64px/1 var(--f-head);color:var(--orange)}
+.grid3{position:absolute;left:96px;right:96px;bottom:130px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;z-index:5}
+.tile{background:#fff;color:var(--ink);border-radius:6px;padding:40px;min-height:320px;box-shadow:0 26px 50px -28px rgba(0,0,0,.35)}
+.dark .tile{background:#221e1a;color:#F6F2EC;box-shadow:none}
+.tile .h{font-size:96px;color:var(--orange)}
+.tile p{font:600 38px/1.3 var(--f-body);margin:22px 0 0}
+.grid4{position:absolute;left:96px;right:96px;top:170px;bottom:120px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:28px;z-index:5}
+.grid4 .tile{min-height:0;display:flex;align-items:center}
+.grid4 .tile .h{font-size:110px;color:inherit}
+.tile.hi{background:var(--orange);color:#fff}
+.tile.hi .h{color:#fff}
+/* before/after */
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.ba div{background:#fff;color:var(--ink);border-radius:6px;padding:28px 32px}
+.ba small{display:block;font:700 24px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.ba b{font:700 76px/1 var(--f-head)}
+.ba .to{background:var(--orange);color:#fff}.ba .to small{color:rgba(255,255,255,.85)}
+/* arrows */
+.arrow{position:absolute;z-index:7;stroke:var(--ink);fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.dark .arrow,.orange .arrow{stroke:#fff}
+.flag{position:absolute;z-index:30;left:50%;transform:translateX(-50%);bottom:110px;background:#fff3b0;color:#5a4500;border:3px dashed #b48a00;font:700 30px/1.2 var(--f-body);padding:14px 26px;border-radius:10px}
+/* steps reveal */
+.step{opacity:0;transform:translateY(14px);transition:opacity .4s ease,transform .4s ease}
+.step.shown{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.s,.step{transition:opacity .01s}.step{transform:none}}
+/* ui */
+#ui{position:fixed;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.08);z-index:100}
+#bar{height:100%;width:0;background:var(--orange);transition:width .3s}
+#help{position:fixed;left:16px;bottom:14px;color:#aaa;font:600 13px/1.4 var(--f-body);z-index:100;opacity:0;transition:opacity .3s;pointer-events:none}
+body:hover #help{opacity:.8}
+#notes{position:fixed;left:0;right:0;bottom:4px;max-height:34vh;overflow:auto;background:rgba(10,10,10,.92);color:#f2f2f2;font:500 20px/1.5 var(--f-body);padding:18px 26px;z-index:101;display:none;border-top:2px solid var(--orange)}
+#notes.on{display:block}
+#notes b{color:var(--orange)}
+@media print{
+  @page{size:1920px 1080px;margin:0}
+  html,body{overflow:visible;background:#fff;height:auto}
+  #viewport{position:static;display:block}
+  #stage{position:static;left:auto;top:auto;transform:none!important;width:auto;height:auto}
+  .s{position:relative;width:1920px;height:1080px;opacity:1;visibility:visible;page-break-after:always;break-after:page}
+  .step{opacity:1;transform:none}
+  #ui,#help,#notes{display:none}
+  *{box-shadow:none!important}
+  .card,.polaroid,.tile,.chat{outline:2px solid #E4DFD8}
+  .dark .tile{outline:none}
+}
+/* ===== стратсессия 2: новые приёмы ===== */
+/* досье кейса: было / стратегия / стало */
+.dossier{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.dossier div{background:#fff;color:var(--ink);border-radius:6px;padding:24px 26px;box-shadow:0 26px 50px -30px rgba(0,0,0,.4)}
+.dossier small{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:7px 18px;font:700 22px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
+.dossier b{display:block;font:700 54px/1 var(--f-head);text-transform:uppercase;white-space:nowrap}
+.dossier span{display:block;font:600 28px/1.25 var(--f-body);margin-top:12px;color:var(--muted)}
+.dossier .st b{font-size:46px;line-height:1.02}
+.dossier .to{background:var(--orange);color:#fff}
+.dossier .to small{background:#fff;color:var(--orange)}
+.dossier .to span{color:rgba(255,255,255,.9)}
+.dark .dossier div:not(.to){background:#221e1a;color:#F6F2EC;box-shadow:none}
+.dark .dossier div:not(.to) small{background:#fff;color:var(--ink)}
+.dark .dossier span{color:var(--muted-d)}
+.orange .dossier .to span{color:rgba(255,255,255,.85)}
+/* цепочка шагов */
+.chain{position:absolute;left:96px;right:96px;top:560px;display:flex;gap:18px;z-index:5}
+.chain div{flex:1;position:relative;background:#fff;color:var(--ink);border-radius:6px;padding:28px 26px 32px;font:700 44px/1.1 var(--f-head);text-transform:uppercase;box-shadow:0 26px 50px -30px rgba(0,0,0,.4)}
+.chain div small{display:block;font:700 22px/1.2 var(--f-body);letter-spacing:.06em;color:var(--muted);margin-bottom:14px}
+.chain div:not(:last-child):after{content:"→";position:absolute;right:-20px;top:50%;transform:translateY(-50%);font:700 40px/1 var(--f-body);color:var(--orange);z-index:2}
+.chain div.hi{background:var(--orange);color:#fff}
+.chain div.hi small{color:rgba(255,255,255,.85)}
+.dark .chain div:not(.hi){background:#221e1a;color:#F6F2EC;box-shadow:none}
+.orange .chain div:not(.hi){background:#fff}
+.orange .chain div.hi{background:var(--ink)}
+.orange .chain div:not(:last-child):after{color:#fff}
+/* развилка */
+.fork{position:absolute;left:0;right:0;top:330px;height:560px;z-index:5}
+.fork .fc{position:absolute;top:0;left:50%;width:380px;margin-left:-190px;min-height:500px;background:#fff;color:var(--ink);border-radius:8px;padding:40px 36px;box-shadow:0 34px 60px -28px rgba(0,0,0,.45);
+  transform:var(--t);opacity:var(--o,1);transition:transform .6s cubic-bezier(.2,.7,.2,1),opacity .6s cubic-bezier(.2,.7,.2,1)}
+.fork .fc.l{--t:translateX(-420px) rotate(-4deg)}
+.fork .fc.c{--t:translateY(-20px);transition-delay:.12s}
+.fork .fc.r{--t:translateX(420px) rotate(4deg);transition-delay:.24s}
+.fork .fc.l{transition-delay:0s}
+.fork .fc small{display:block;font:700 30px/1 var(--f-body);color:var(--orange);margin-bottom:26px}
+.fork .fc b{display:block;font:700 72px/1 var(--f-head);text-transform:uppercase}
+.fork .fc span{display:block;font:600 40px/1.25 var(--f-body);margin-top:28px}
+.fork .fc.act{background:var(--orange);color:#fff}
+.fork .fc.act small{color:var(--ink)}
+.fork .fc.dim{--o:.35}
+.s:not(.on) .fork .fc{transform:none;opacity:0;transition:none}
+body.ov .fork .fc{transform:var(--t)!important;opacity:var(--o,1)!important}
+@media (prefers-reduced-motion:reduce){
+  .fork .fc,.s:not(.on) .fork .fc{transform:var(--t)!important;transition:opacity .2s linear!important;transition-delay:0s!important}
+}
+/* фон из рукописного слова */
+.scribble{position:absolute;inset:-80px;font:700 110px/1.05 var(--f-hand);color:rgba(255,255,255,.07);transform:rotate(-6deg);word-spacing:30px;overflow:hidden;z-index:0;pointer-events:none}
+.light .scribble{color:rgba(20,18,16,.08)}
+/* пары событие → формат */
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:18px 40px}
+.pairs div{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid rgba(255,255,255,.18);padding:16px 0}
+.pairs span{font:600 42px/1.2 var(--f-body)}
+.pairs b{font:700 50px/1 var(--f-head);text-transform:uppercase;color:var(--orange)}
+/* рубрики */
+.rub{position:absolute;left:96px;right:96px;top:470px;display:grid;grid-template-columns:repeat(5,1fr);gap:20px;z-index:5}
+.rub div{background:#fff;border-radius:6px;padding:30px 26px;min-height:300px;font:700 38px/1.3 var(--f-body);box-shadow:0 26px 50px -30px rgba(0,0,0,.4)}
+.rub small{display:block;font:700 46px/1 var(--f-head);text-transform:uppercase;color:var(--orange);margin-bottom:22px}
+.rub .hi{background:var(--orange);color:#fff}.rub .hi small{color:#fff}
+/* формат вокруг ведущего */
+.fmt{position:absolute;width:560px;background:#221e1a;border-left:8px solid var(--orange);border-radius:6px;padding:30px 34px;z-index:6}
+.fmt b{display:block;font:700 60px/1 var(--f-head);text-transform:uppercase;color:#fff}
+.fmt span{display:block;font:600 36px/1.25 var(--f-body);color:var(--muted-d);margin-top:14px}
+/* сетка из 10 / 8 / 6 */
+.ten{position:absolute;left:96px;right:96px;top:380px;bottom:120px;display:grid;grid-template-columns:repeat(5,1fr);gap:20px;z-index:5}
+.ten div{display:flex;flex-direction:column;justify-content:center;background:#fff;color:var(--ink);border-radius:6px;padding:26px;font:700 52px/1.05 var(--f-head);text-transform:uppercase;box-shadow:0 26px 50px -30px rgba(0,0,0,.35)}
+.ten div small{font:700 26px/1 var(--f-body);color:var(--orange);margin-bottom:14px}
+.ten div.hi{background:var(--orange);color:#fff}.ten div.hi small{color:var(--ink)}
+.ten div:nth-child(odd){transform:rotate(-.6deg)}.ten div:nth-child(even){transform:rotate(.6deg)}
+/* сценарий по частям */
+.script{display:grid;gap:18px;margin-top:30px}
+.script div{background:#221e1a;border-radius:6px;padding:22px 30px;font:600 44px/1.25 var(--f-body);color:#F6F2EC}
+.script small{display:block;font:700 24px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--orange);margin-bottom:10px}
+.script .hi{background:var(--orange);color:#fff}.script .hi small{color:var(--ink)}
+/* формула с пропусками */
+.formula{display:grid;gap:34px;margin-top:40px;font:700 96px/1.1 var(--f-head);text-transform:uppercase}
+.formula i{display:inline-block;width:620px;height:.9em;border-bottom:10px solid var(--orange);vertical-align:baseline}
+.formula i.sm{width:300px}
+@media print{.fork .fc{transform:var(--t)!important;opacity:var(--o,1)!important}.scribble{display:none}}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+
+<!-- ============ ВХОД ============ -->
+<section class="s light" data-tag="стратсессия 2 · стратегия" data-notes="Привет! Это вторая стратсессия. Вчера каждый поставил цель. Сегодня выберем, как к ней идти: ведущую стратегию, способ съёмки, три подачи и где брать темы. Ручку и заметки — под руку.">
+  <div class="ghost">стратегия</div>
+  <div class="cut" style="right:60px;bottom:-30px;width:720px;z-index:6"><img src="authors.png" alt="Елизавета и Генрих Кремер"></div>
+  <div class="abs z" style="left:96px;top:180px">
+    <h1 class="h xl">Стратегия<br>Reels</h1>
+    <p class="hand" style="font-size:80px;margin-top:20px;transform:rotate(-4deg)">выбери свою</p>
+  </div>
+  <div class="card" style="left:96px;top:680px;width:620px;transform:rotate(-2deg)">
+    <span class="pill or">стратсессия 2</span>
+    <p>Ведущая стратегия, форматы и темы для роликов — за один эфир</p>
+  </div>
+  <svg class="arrow" style="left:760px;top:720px" width="200" height="140" viewBox="0 0 200 140"><path d="M10 80 C70 40 130 40 190 70 M190 70 L162 56 M190 70 L168 92"/></svg>
+  <div class="abs z" style="left:96px;bottom:60px"><span class="pill">Генрих и Лиза Кремер</span></div>
+</section>
+
+<section class="s dark" data-tag="стратсессия 2 · стратегия" data-notes="Попросить поставить + в чат, если слышно и видно.">
+  <div class="ghost">+</div>
+  <h2 class="h l abs z" style="left:96px;top:190px">Поставь плюс<br>в чат</h2>
+  <div class="chat" style="top:620px;left:96px;right:640px"><div class="who">Ведущий</div><div class="q">«+», если ты нас слышишь и видишь</div></div>
+</section>
+
+<section class="s dark" data-tag="стратсессия 2 · стратегия" data-notes="Попросить написать город и страну. Прочитать несколько городов вслух.">
+  <h2 class="h l abs z" style="left:96px;top:190px">Напиши,<br>откуда ты</h2>
+  <div class="chat" style="top:620px;left:96px;right:640px"><div class="who">Ведущий</div><div class="q">Город и страна — в чат</div></div>
+  <div class="hand abs" style="right:140px;top:420px;font-size:110px;transform:rotate(-6deg)">Москва?<br>Сочи?<br>Батуми?</div>
+</section>
+
+<section class="s light" data-tag="стратсессия 2 · стратегия" data-notes="Напомнить, что стратсессий три и каждая опирается на предыдущую. Вчера — цель. Сегодня — стратегия. Завтра — монетизация.">
+  <div class="ghost">3</div>
+  <h2 class="h m abs z" style="left:96px;top:150px">Три стратсессии</h2>
+  <div class="grid3" style="bottom:150px">
+    <div class="tile"><div class="h">Вчера ✓</div><p>Цель: ради чего ведёшь блог и к каким цифрам идёшь</p></div>
+    <div class="tile" style="background:var(--orange);color:#fff"><div class="h" style="color:#fff">Сегодня</div><p>Стратегия: что снимать, в каком формате и где брать темы</p></div>
+    <div class="tile"><div class="h">24.11</div><p>Монетизация: что ты продаёшь и как</p></div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="стратсессия 2 · стратегия" data-notes="Проверка домашки. Попросить написать в чат цель, которую поставили вчера. Прочитать 3–5 целей вслух, похвалить конкретные.">
+  <h2 class="h l abs z" style="left:96px;top:170px">Твоя цель</h2>
+  <div class="chat"><div class="who">Ведущий</div><div class="q">Напиши в чат цель, которую ты поставил вчера</div></div>
+</section>
+
+<section class="s orange" data-tag="стратсессия 2 · стратегия" data-notes="Мостик: цель без стратегии — это желание. Сегодня собираем маршрут.">
+  <div class="abs z" style="left:96px;top:220px">
+    <div class="h l">Цель — куда идёшь.</div>
+    <div class="h l step" style="color:var(--ink);margin-top:20px">Стратегия — как дойдёшь.</div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="стратсессия 2 · стратегия" data-notes="Три результата эфира.">
+  <h2 class="h m abs z" style="left:96px;top:150px">Что ты унесёшь<br>с эфира</h2>
+  <div class="grid3">
+    <div class="tile step"><div class="h">01</div><p>Одну ведущую стратегию для своего блога</p></div>
+    <div class="tile step"><div class="h">02</div><p>Как снимать и три подачи для роликов</p></div>
+    <div class="tile step"><div class="h">03</div><p>Где брать темы и как собрать сценарий</p></div>
+  </div>
+</section>
+
+<!-- ============ 01 ЗНАКОМСТВО ============ -->
+<section class="s orange" data-tag="01 · знакомство" data-notes="Коротко о нас — для тех, кто пришёл впервые.">
+  <div class="ghost">01</div>
+  <h2 class="h xxl abs z" style="left:96px;top:280px">Кто мы</h2>
+  <div class="cut" style="right:120px;bottom:0;width:640px"><img src="authors.png" alt="Елизавета и Генрих Кремер"></div>
+</section>
+
+<section class="s light" data-tag="01 · знакомство" data-notes="Генрих: мой Instagram — 211 тысяч подписчиков. Учу привлекать клиентов из блога через Reels и воронки.">
+  <div class="ghost">Генрих</div>
+  <div class="cut" style="left:40px;bottom:0;width:640px"><img src="genrih-bw.png" alt="Генрих Кремер, чёрно-белый портрет"></div>
+  <div class="abs z" style="left:760px;top:250px"><div class="h" style="font-size:260px;color:var(--orange)">211K</div><p class="lead">подписчиков в Instagram</p></div>
+  <div class="polaroid" style="right:96px;top:170px;width:400px;height:560px;transform:rotate(4deg)"><img src="genrih-profile.jpg" alt="Скриншот профиля genrihkremer: 211 тысяч подписчиков" style="object-position:top"><div class="cap">@genrihkremer</div></div>
+</section>
+
+<section class="s light" data-tag="01 · знакомство" data-notes="Лиза: 106 тысяч подписчиков, предприниматель и маркетолог.">
+  <div class="ghost">Лиза</div>
+  <div class="polaroid" style="left:110px;top:130px;width:480px;height:700px;transform:rotate(-4deg)"><img src="liza.jpg" alt="Елизавета Кремер в белом пиджаке на красном фоне" style="object-position:center 20%"><div class="cap">Лиза</div></div>
+  <div class="abs z" style="left:680px;top:250px"><div class="h" style="font-size:260px;color:var(--orange)">106K</div><p class="lead">подписчиков в Instagram</p></div>
+  <div class="polaroid" style="right:96px;top:190px;width:400px;height:560px;transform:rotate(3deg)"><img src="liza-profile.jpg" alt="Скриншот профиля elizaveta_kremer: 106 тысяч подписчиков" style="object-position:top"><div class="cap">@elizaveta_kremer</div></div>
+</section>
+
+<section class="s dark" data-tag="01 · знакомство" data-notes="Начинали, как и многие: около 2 000 подписчиков и ролики по 300 просмотров.">
+  <div class="abs z" style="left:96px;top:200px"><div class="h" style="font-size:300px;color:var(--orange)">2&nbsp;000</div><p class="lead">подписчиков на старте</p>
+  <div class="h step" style="font-size:200px;margin-top:40px">300</div><p class="lead step">просмотров на ролик</p></div>
+  <div class="frame" style="right:110px;top:260px;width:560px;height:560px;transform:rotate(4deg);z-index:7"><img src="meme-confused.gif" alt="Мем: растерянный мужчина в кожаной куртке"></div>
+</section>
+
+<section class="s orange" data-tag="01 · знакомство" data-notes="Мы нашли систему: ролики стали набирать просмотры и приводить клиентов. Сегодня — её главную часть: стратегию.">
+  <div class="ghost">система</div>
+  <h2 class="h abs" style="left:96px;top:230px;font-size:120px;z-index:9">Мы нашли<br>систему</h2>
+  <p class="lead abs z" style="left:100px;top:560px;width:620px">Ролики стали набирать просмотры и приводить клиентов</p>
+  <div class="polaroid" style="left:800px;top:90px;width:300px;height:560px;transform:rotate(-6deg);padding-bottom:16px"><img src="genrih-reels.jpg" alt="Рилс Генриха: 7 млн, 6,6 млн, 5 млн просмотров" style="object-position:top"></div>
+  <div class="polaroid" style="left:1040px;top:230px;width:330px;height:600px;transform:rotate(3deg);padding-bottom:16px"><img src="maxim-reels.jpg" alt="Рилс Максима: до 7,8 млн просмотров" style="object-position:top"></div>
+  <div class="polaroid" style="left:1320px;top:70px;width:330px;height:600px;transform:rotate(-2deg);padding-bottom:16px"><img src="anya-reels.jpg" alt="Рилс Ани: до 5,3 млн просмотров" style="object-position:top"></div>
+  <div class="polaroid" style="left:1560px;top:380px;width:300px;height:560px;transform:rotate(6deg);padding-bottom:16px"><img src="reels-a.jpg" alt="Рилс учеников с сотнями тысяч просмотров" style="object-position:top"></div>
+  <div class="hand abs" style="left:100px;top:760px;font-size:70px;color:#fff;transform:rotate(-4deg);z-index:8">от 100 тыс. до 7 млн<br>на одном ролике</div>
+</section>
+
+<section class="s dark" data-tag="01 · знакомство" data-notes="Ученикам мы помогли набрать больше 2 миллионов подписчиков, около 300 кейсов. [ПРОВЕРИТЬ: в шапке профиля Генриха — «1 МЛН+»]">
+  <div class="abs z" style="left:96px;top:150px"><div class="h" style="font-size:220px;color:var(--orange)">2 млн+</div><p class="lead">подписчиков набрали наши ученики · ≈300 кейсов</p></div>
+  <div class="abs" style="left:96px;right:96px;top:520px;display:grid;grid-template-columns:repeat(4,1fr);gap:22px;z-index:6">
+    <img src="a-maxim.jpg" alt="Профиль maksim_sovetnikov: 219 тысяч подписчиков" style="width:100%;border-radius:6px;transform:rotate(-1.5deg)">
+    <img src="a-milman.jpg" alt="Профиль milenvibes: 54 тысячи подписчиков" style="width:100%;border-radius:6px;transform:rotate(1deg)">
+    <img src="a-anya.jpg" alt="Профиль anya_dikhnova_: 34,5 тысячи подписчиков" style="width:100%;border-radius:6px;transform:rotate(-1deg)">
+    <img src="a-vladislav.jpg" alt="Профиль врача-остеопата: 34,1 тысячи подписчиков" style="width:100%;border-radius:6px;transform:rotate(1.5deg)">
+    <img src="a-lyubov.jpg" alt="Профиль newnikliubov: 27,6 тысячи подписчиков" style="width:100%;border-radius:6px;transform:rotate(1deg)">
+    <img src="a-vadim.jpg" alt="Профиль vadimkompaniiets: 29,2 тысячи подписчиков" style="width:100%;border-radius:6px;transform:rotate(-1.5deg)">
+    <img src="a-antsiferova.jpg" alt="Профиль antsiferova.ru: 24 тысячи подписчиков" style="width:100%;border-radius:6px;transform:rotate(1deg)">
+    <img src="a-wrest.jpg" alt="Профиль wrestmaks: 15,2 тысячи подписчиков" style="width:100%;border-radius:6px;transform:rotate(-1deg)">
+  </div>
+</section>
+
+<!-- 01 · кейсы: досье -->
+<section class="s light" data-tag="01 · кейсы" data-notes="Максим Советников, фитнес-тренер из Сочи. Было около 10 тыс. неактивных подписчиков, ролики по 1–2 тыс. Стратегия эксперта: узкая тема — упражнения для осанки вместо похудения. Один из первых роликов — около 1 млн. За полгода — около 220 тыс. подписчиков, записанный курс принёс 3,5 млн ₽ за полгода. На скриншоте сейчас 219 тыс.">
+  <div class="ghost">Максим</div>
+  <div class="abs z" style="left:96px;top:150px;width:860px">
+    <span class="pill">фитнес-тренер · Сочи</span>
+    <h2 class="h l" style="margin:24px 0 30px">Максим</h2>
+    <div class="dossier">
+      <div><small>было</small><b>11,6 тыс.</b><span>ролики по 1–2 тыс.</span></div>
+      <div class="st"><small>стратегия</small><b>Эксперт</b><span>упражнения для осанки</span></div>
+      <div class="to"><small>стало</small><b>219 тыс.</b><span>курс — 3,5 млн ₽</span></div>
+    </div>
+  </div>
+  <div class="polaroid" style="left:1000px;top:150px;width:800px;height:250px;transform:rotate(-2deg)"><img src="b-maxim.jpg" alt="Профиль Максима до: 11,6 тысячи подписчиков" style="object-fit:contain;background:#fff"><div class="cap">было</div></div>
+  <div class="polaroid" style="left:1000px;top:520px;width:800px;height:290px;transform:rotate(2deg)"><img src="a-maxim.jpg" alt="Профиль Максима после: 219 тысяч подписчиков" style="object-fit:contain;background:#fff"><div class="cap">стало</div></div>
+  <svg class="arrow" style="left:880px;top:600px" width="130" height="90" viewBox="0 0 130 90"><path d="M10 20 C50 10 90 30 120 70 M120 70 L94 66 M120 70 L114 44"/></svg>
+</section>
+
+<section class="s dark" data-tag="01 · кейсы" data-notes="Аня Дихнова, Reels-продюсер и маркетолог. Было около 2 тыс. подписчиков, несистемный контент на разные темы. Стратегия медийного эксперта: идея блога «стать звездой за год», рубрики о беременности, отношениях, фигуре, брендах и мечте. За 3 месяца — 35 тыс., запуск обучения на 500 тыс. ₽, бартеры с брендами. На скриншоте «до» — 4,9 тыс.">
+  <div class="ghost">Аня</div>
+  <div class="abs z" style="left:96px;top:150px;width:900px">
+    <span class="pill">Reels-продюсер</span>
+    <h2 class="h l" style="margin:24px 0 30px">Аня</h2>
+    <div class="dossier">
+      <div><small>было</small><b>4,9 тыс.</b><span>темы вразнобой</span></div>
+      <div class="st"><small>стратегия</small><b>Медийный эксперт</b><span>«стать звездой за год»</span></div>
+      <div class="to"><small>стало</small><b>35 тыс.</b><span>обучение — 500 тыс. ₽</span></div>
+    </div>
+  </div>
+  <div class="polaroid" style="right:330px;top:140px;width:380px;height:650px;transform:rotate(-5deg)"><img src="anya-profile.jpg" alt="Скриншот профиля Ани Дихновой: 35 тысяч подписчиков" style="object-position:top"></div>
+  <div class="polaroid" style="right:80px;top:230px;width:330px;height:600px;transform:rotate(5deg)"><img src="anya-reels.jpg" alt="Скриншот рилс Ани: до 5,3 млн просмотров" style="object-position:top"></div>
+</section>
+
+<section class="s orange" data-tag="01 · кейсы" data-notes="Вадим Компаниец, предприниматель в сфере продуктов для здоровья. Было около 2 тыс. подписчиков и ролики по 300–400 просмотров. Стратегия личного бренда: показывал, как развивается компания, позже добавил экспертный контент. За 3 месяца — около 30 тыс., ролики на 3–7 млн. Пришли два типа людей: интересующиеся бизнесом и те, кто хочет научиться Reels.">
+  <div class="ghost">Вадим</div>
+  <div class="abs z" style="left:96px;top:150px;width:900px">
+    <span class="pill">предприниматель</span>
+    <h2 class="h l" style="margin:24px 0 30px">Вадим</h2>
+    <div class="dossier">
+      <div><small>было</small><b>2&nbsp;074</b><span>ролики по 300–400</span></div>
+      <div class="st"><small>стратегия</small><b>Личный бренд</b><span>как растёт компания</span></div>
+      <div class="to" style="background:var(--ink)"><small>стало</small><b>29,2 тыс.</b><span>ролики на 3–7 млн</span></div>
+    </div>
+  </div>
+  <div class="polaroid" style="right:96px;top:170px;width:760px;height:300px;transform:rotate(-3deg)"><img src="b-vadim.jpg" alt="Профиль Вадима до: 2 074 подписчика" style="object-fit:contain;background:#141210"><div class="cap">было</div></div>
+  <div class="polaroid" style="right:140px;top:580px;width:760px;height:260px;transform:rotate(2deg)"><img src="a-vadim.jpg" alt="Профиль Вадима после: 29,2 тысячи подписчиков" style="object-fit:contain;background:#fff"><div class="cap">стало</div></div>
+</section>
+
+<section class="s dark" data-tag="01 · кейсы" data-notes="Вопрос к залу. Прочитать несколько ответов. Подвести: у всех разные ниши и разная подача, но каждый выбрал одну ведущую стратегию.">
+  <h2 class="h l abs z" style="left:96px;top:170px">Что у них общего?</h2>
+  <div class="chat"><div class="who">Ведущий</div><div class="q">Тренер, Reels-продюсер, предприниматель. Что у них общего? Напиши в чат</div></div>
+</section>
+
+<section class="s orange" data-tag="01 · кейсы" data-notes="Ответ: каждый выбрал одну ведущую стратегию и подачу под себя. Сегодня делаем то же самое.">
+  <div class="ghost">одна</div>
+  <h2 class="h l abs z" style="left:96px;top:260px;width:1700px">Каждый выбрал<br><span style="color:var(--ink)">одну ведущую стратегию</span></h2>
+</section>
+
+<!-- ============ 02 ЧТО МЕШАЕТ ============ -->
+<section class="s orange" data-tag="02 · что мешает" data-notes="Переходим к тому, что мешает блогу расти.">
+  <div class="ghost">02</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Что мешает<br>расти</h2>
+</section>
+
+<section class="s dark" data-tag="02 · что мешает" data-notes="Попросить ответить одним-двумя словами. Прочитать ответы — обычно там всё подряд.">
+  <h2 class="h abs z" style="left:96px;top:150px;font-size:104px">Что ты снимаешь?</h2>
+  <div class="chat" style="right:820px;top:420px"><div class="who">Ведущий</div><div class="q">О чём твои последние 5 роликов? Напиши в чат</div></div>
+  <div class="frame" style="right:110px;top:250px;width:620px;height:620px;transform:rotate(3deg)"><img src="meme-typing.gif" alt="Мем: чёрный кот быстро печатает на ноутбуке"></div>
+</section>
+
+<section class="s dark" data-tag="02 · что говорят блогеры" data-notes="Реальная фраза из исследования аудитории. Спросить: кто узнал себя — «+» в чат.">
+  <div class="ghost">«</div>
+  <h2 class="h m abs z" style="left:96px;top:320px;width:1600px">«Не понимаю, что снимать»</h2>
+  <p class="hand abs" style="left:100px;top:560px;font-size:56px">из исследования аудитории</p>
+</section>
+
+<section class="s dark" data-tag="02 · что говорят блогеры" data-notes="Ещё одна фраза из исследования.">
+  <div class="ghost">«</div>
+  <h2 class="h m abs z" style="left:96px;top:260px;width:1650px">«Снимаю ролики, но они набирают <span class="o">200–500 просмотров</span>»</h2>
+  <p class="hand abs" style="left:100px;top:660px;font-size:56px">из исследования аудитории</p>
+</section>
+
+<section class="s dark" data-tag="02 · что говорят блогеры" data-notes="Фраза из исследования. Просмотры без стратегии приводят случайных людей.">
+  <div class="ghost">«</div>
+  <h2 class="h m abs z" style="left:96px;top:320px;width:1600px">«Подписчики есть, а заявок нет»</h2>
+  <p class="hand abs" style="left:100px;top:560px;font-size:56px">из исследования аудитории</p>
+</section>
+
+<section class="s dark" data-tag="02 · что говорят блогеры" data-notes="Реальная фраза участницы из исследования. Она пробует стратегии наугад и не понимает, что не так.">
+  <div class="ghost">«</div>
+  <h2 class="h abs z" style="left:96px;top:220px;width:1680px;font-size:84px">«Пока использовала две стратегии, но результата никакого. Возможно, причина — <span class="o">не мой формат</span>»</h2>
+  <p class="hand abs" style="left:100px;top:740px;font-size:56px">из исследования аудитории</p>
+</section>
+
+<section class="s light" data-tag="02 · узнаёшь себя?" data-notes="Зачитать по одному пункту. После каждого можно спросить: кто узнал себя?">
+  <div class="ghost">?</div>
+  <div class="abs z" style="left:96px;top:150px;width:1700px">
+    <h2 class="h l">Узнаёшь себя?</h2>
+    <ul class="steps" style="margin-top:40px;gap:22px">
+      <li class="step"><b>01</b>Экспертное, личное и продающее — вперемешку</li>
+      <li class="step"><b>02</b>Каждую тему придумываешь с нуля</li>
+      <li class="step"><b>03</b>Подписываются случайные люди, а не клиенты</li>
+      <li class="step"><b>04</b>Непонятно, какие форматы работают в твоей нише</li>
+    </ul>
+  </div>
+</section>
+
+<section class="s orange" data-tag="02 · главная ошибка" data-notes="Главная ошибка — снимать всё подряд без стратегии.">
+  <div class="ghost">ошибка</div>
+  <p class="lead abs z" style="left:100px;top:250px">Главная ошибка</p>
+  <h2 class="h xl abs z" style="left:96px;top:340px">Снимать всё<br><span style="color:var(--ink)">подряд</span></h2>
+</section>
+
+<section class="s dark" data-tag="02 · главная ошибка" data-notes="Объяснить простым языком: если сегодня спорт, завтра отношения, послезавтра продажа — зритель не понимает, зачем подписываться.">
+  <div class="abs z" style="left:96px;top:170px;width:1100px">
+    <div class="h" style="font-size:88px">Понедельник — спорт</div>
+    <div class="h step" style="font-size:88px">Вторник — отношения</div>
+    <div class="h step" style="font-size:88px">Среда — «купи курс»</div>
+    <p class="lead step o" style="margin-top:50px">Зритель не понимает, зачем на тебя подписываться</p>
+  </div>
+  <div class="frame" style="right:96px;top:260px;width:460px;height:460px;transform:rotate(-3deg);z-index:7"><img src="meme-keanu.gif" alt="Мем: удивлённый Киану Ривз"></div>
+</section>
+
+<section class="s light" data-tag="02 · логика" data-notes="Главная схема эфира. Сначала аудитория, потом стратегия, и только потом темы, формат и сценарий. Сегодня проходим её целиком.">
+  <div class="ghost">схема</div>
+  <h2 class="h m abs z" style="left:96px;top:150px">Сначала стратегия,<br>потом инструменты</h2>
+  <div class="chain">
+    <div class="step"><small>01</small>Аудитория</div>
+    <div class="step hi"><small>02</small>Стратегия</div>
+    <div class="step"><small>03</small>Темы</div>
+    <div class="step"><small>04</small>Формат</div>
+    <div class="step"><small>05</small>Сценарий</div>
+  </div>
+</section>
+
+<!-- ============ 03 ТОЧКА А ============ -->
+<section class="s orange" data-tag="03 · точка А" data-notes="Короткое упражнение: где ты сейчас.">
+  <div class="ghost">03</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Твоя<br>точка А</h2>
+</section>
+
+<section class="s light" data-tag="03 · точка А" data-notes="Дождаться, пока все возьмут ручку или откроют заметки.">
+  <div class="ghost">шаг 1</div>
+  <div class="abs z" style="left:96px;top:250px"><span class="pill or">шаг 1</span><h2 class="h l" style="margin-top:30px">Возьми ручку<br>или открой заметки</h2></div>
+</section>
+
+<section class="s light" data-tag="03 · точка А" data-notes="Первый вопрос — цель из прошлой стратсессии. Записать одной строкой.">
+  <div class="ghost">01</div>
+  <div class="abs z" style="left:96px;top:230px;width:1600px"><span class="pill">вопрос 1</span><h2 class="h l" style="margin-top:30px">Какая у тебя цель<br>на месяц?</h2><p class="hand" style="font-size:64px;margin-top:30px">та, что ты поставил вчера</p></div>
+</section>
+
+<section class="s light" data-tag="03 · точка А" data-notes="Второй вопрос. Попросить описать одного конкретного человека, а не «всех женщин 25–45».">
+  <div class="ghost">02</div>
+  <div class="abs z" style="left:96px;top:230px;width:1600px"><span class="pill">вопрос 2</span><h2 class="h l" style="margin-top:30px">Кто твой зритель?</h2><p class="lead" style="margin-top:30px">Опиши одного человека: кто он и что у него болит</p></div>
+</section>
+
+<section class="s light" data-tag="03 · точка А" data-notes="Третий вопрос — ключевой. Ответ подскажет стратегию: знания — эксперт; знания и жизнь — медийный эксперт; жизнь, путь и ценности — личный бренд.">
+  <div class="abs z" style="left:96px;top:150px"><span class="pill">вопрос 3</span><h2 class="h m" style="margin-top:26px">Что тебе комфортно показывать?</h2></div>
+  <div class="grid3">
+    <div class="tile step"><div class="h">Знания</div><p>Объяснять, показывать, решать задачи</p></div>
+    <div class="tile step"><div class="h">Знания + жизнь</div><p>Профессия и я сам: характер, путь, выбор</p></div>
+    <div class="tile step"><div class="h">Себя</div><p>Жизнь, решения, ценности, истории</p></div>
+  </div>
+</section>
+
+<section class="s light" data-tag="03 · точка А" data-notes="Пауза. Дать время записать ответы. На фоне можно включить музыку.">
+  <div class="ghost">пиши</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Пиши.<br><span class="o">Мы подождём</span></h2>
+</section>
+
+<section class="s dark" data-tag="03 · точка А" data-notes="Попросить написать ответ на третий вопрос одним словом. Прочитать распределение.">
+  <h2 class="h l abs z" style="left:96px;top:170px">Что выбрал?</h2>
+  <div class="chat"><div class="who">Ведущий</div><div class="q">Напиши одним словом: «знания», «знания + жизнь» или «себя»</div></div>
+</section>
+
+<!-- ============ 04 ТРИ СТРАТЕГИИ ============ -->
+<section class="s orange" data-tag="04 · три стратегии" data-notes="Главный блок эфира: три стратегии.">
+  <div class="ghost">04</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Три<br>стратегии</h2>
+</section>
+
+<section class="s light" data-tag="04 · развилка" data-notes="Развилка. Три дороги: эксперт, медийный эксперт, личный бренд. Сейчас пройдём каждую, а потом выберешь свою.">
+  <div class="ghost">выбор</div>
+  <h2 class="h m abs z" style="left:96px;top:140px">Три дороги</h2>
+  <div class="fork">
+    <div class="fc l"><small>01</small><b>Эксперт</b><span>Решаю задачу аудитории</span></div>
+    <div class="fc c"><small>02</small><b>Медийный эксперт</b><span>Запоминают и знания, и меня</span></div>
+    <div class="fc r"><small>03</small><b>Личный бренд</b><span>Идут за мной и моей жизнью</span></div>
+  </div>
+</section>
+
+<!-- Эксперт -->
+<section class="s light" data-tag="04 · эксперт" data-notes="Первая дорога — эксперт.">
+  <div class="ghost">эксперт</div>
+  <h2 class="h m abs z" style="left:96px;top:140px">Дорога 1</h2>
+  <div class="fork">
+    <div class="fc l act"><small>01</small><b>Эксперт</b><span>Решаю задачу аудитории</span></div>
+    <div class="fc c dim"><small>02</small><b>Медийный эксперт</b><span>Запоминают и знания, и меня</span></div>
+    <div class="fc r dim"><small>03</small><b>Личный бренд</b><span>Идут за мной и моей жизнью</span></div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="04 · эксперт" data-notes="Суть: контент раскрывает знания и помогает решить конкретную проблему. Объяснения, демонстрации, упражнения, тесты, инструкции, разборы, сценки. Вопрос к себе — на слайде.">
+  <div class="ghost">эксперт</div>
+  <div class="abs z" style="left:96px;top:180px;width:1700px">
+    <span class="pill">стратегия 01</span>
+    <h2 class="h l" style="margin:26px 0 40px">Эксперт</h2>
+    <p class="lead" style="width:1300px">Контент раскрывает твои знания и помогает решить конкретную проблему</p>
+    <p class="hand step" style="font-size:66px;margin-top:50px;transform:rotate(-2deg)">«Какую задачу я умею решать — и как показать это в коротком видео?»</p>
+  </div>
+</section>
+
+<section class="s orange" data-tag="04 · эксперт" data-notes="Так мы называем эту стратегию: самый быстрый способ привлечения клиентов из блога.">
+  <div class="ghost">быстро</div>
+  <h2 class="h l abs z" style="left:96px;top:260px;width:1700px">Самый быстрый способ<br><span style="color:var(--ink)">привлечь клиентов из блога</span></h2>
+</section>
+
+<section class="s light" data-tag="04 · эксперт" data-notes="Пять шагов стратегии эксперта. Сегодня подробно — первые три. Кодовое слово, воронку и диагностику разберём завтра на монетизации.">
+  <div class="abs z" style="left:96px;top:140px;width:1700px">
+    <h2 class="h m">Эксперт: 5 шагов</h2>
+    <ul class="steps" style="margin-top:36px;gap:20px">
+      <li class="step"><b>01</b>Выбрать одну нишу</li>
+      <li class="step"><b>02</b>Найти вопросы, которые уже волнуют клиентов</li>
+      <li class="step"><b>03</b>Собрать 100 идей для Reels</li>
+      <li class="step"><b>04</b>Добавить кодовое слово и воронку <span class="mut">— завтра</span></li>
+      <li class="step"><b>05</b>Отбирать клиентов на диагностике <span class="mut">— завтра</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="s light" data-tag="04 · эксперт · ниша" data-notes="Шаг 1. Человек должен сразу понять, в чём ты эксперт и с какой проблемой к тебе идти. Не продвигай всё, что умеешь.">
+  <div class="ghost">ниша</div>
+  <div class="abs z" style="left:96px;top:150px;width:1700px">
+    <span class="pill or">шаг 1</span>
+    <h2 class="h l" style="margin:26px 0 40px">Один блог —<br>одно обещание</h2>
+    <div class="ba" style="grid-template-columns:repeat(4,1fr);max-width:1700px">
+      <div class="step"><small>психолог</small><b>психология</b></div>
+      <div class="step"><small>тренер</small><b>фитнес</b></div>
+      <div class="step"><small>эксперт по продажам</small><b>продажи</b></div>
+      <div class="step"><small>стилист</small><b>стиль</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="04 · эксперт · ниша" data-notes="Частый страх: «у меня ниша неуникальная». Наоборот — хорошо, если есть конкуренты: значит, есть спрос и деньги.">
+  <div class="ghost">ниша</div>
+  <div class="abs z" style="left:96px;top:150px;width:1700px">
+    <h2 class="h l">Ниша не должна<br>быть уникальной</h2>
+    <ul class="steps" style="margin-top:36px;gap:18px">
+      <li class="step"><b>✓</b>в ней уже есть конкуренты</li>
+      <li class="step"><b>✓</b>люди знают о своей проблеме</li>
+      <li class="step"><b>✓</b>по теме снимают популярные Reels</li>
+    </ul>
+    <p class="hand step" style="font-size:64px;margin-top:30px">конкуренция = в нише есть деньги</p>
+  </div>
+</section>
+
+<section class="s light" data-tag="04 · эксперт · вопросы" data-notes="Шаг 2. Темы не придумываем из головы. Выписываем частые и даже «глупые» вопросы клиентов — это готовые темы.">
+  <div class="ghost">вопросы</div>
+  <div class="abs z" style="left:96px;top:150px;width:1700px">
+    <span class="pill or">шаг 2</span>
+    <h2 class="h l" style="margin:26px 0 36px">Вопросы клиентов</h2>
+    <ul class="steps" style="gap:16px">
+      <li class="step"><b>?</b>«Почему у меня не получается?»</li>
+      <li class="step"><b>?</b>«Как выбрать?»</li>
+      <li class="step"><b>?</b>«Что делать, если…?»</li>
+      <li class="step"><b>?</b>«Можно ли без…?»</li>
+    </ul>
+  </div>
+  <div class="hand abs" style="right:150px;top:300px;font-size:80px;transform:rotate(-6deg)">их тебе<br>уже задают</div>
+</section>
+
+<section class="s light" data-tag="04 · эксперт · кейс" data-notes="Елена Мильман, стилист. Выписала частые вопросы клиентов и изучила популярные ролики в нише. Аудиторию больше всего интересовало: как подбирать вещи по цветам, как сочетать недорогую одежду, как выглядеть стильно без больших затрат. Было около 700–900, примерно на 28-й день ролик на 1 млн, сейчас 54 тыс. по скриншоту.">
+  <div class="ghost">Лена</div>
+  <div class="abs z" style="left:96px;top:150px;width:1000px">
+    <span class="pill">стилист Лена Мильман</span>
+    <h2 class="h" style="margin:24px 0 30px;font-size:100px">Нашла темы в вопросах</h2>
+    <ul class="steps" style="gap:16px">
+      <li class="step"><b>01</b>как подбирать вещи по цветам</li>
+      <li class="step"><b>02</b>как сочетать недорогую одежду</li>
+      <li class="step"><b>03</b>как выглядеть стильно без больших затрат</li>
+    </ul>
+    <p class="lead step o" style="margin-top:30px">909 → 54 тыс. подписчиков</p>
+  </div>
+  <div class="polaroid" style="right:96px;top:110px;width:520px;height:620px;transform:rotate(4deg)"><img src="milman-photo.jpg" alt="Елена Мильман в красном платье" style="object-position:center 20%"><div class="cap">Лена</div></div>
+  <div class="polaroid" style="right:340px;top:770px;width:560px;height:150px;transform:rotate(-3deg);padding-bottom:16px;z-index:7"><img src="b-milman.jpg" alt="Профиль Елены до: 909 подписчиков" style="object-fit:contain;background:#fff"></div>
+</section>
+
+<section class="s dark" data-tag="04 · эксперт · 100 идей" data-notes="Шаг 3. Таблица: по вертикали 10 популярных вопросов клиентов, по горизонтали 10 форматов подачи. На пересечении — идея ролика. Больше не нужно каждый день думать, что снимать.">
+  <div class="scribble">идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея идея</div>
+  <div class="abs z" style="left:96px;top:150px"><span class="pill or">шаг 3</span></div>
+  <div class="abs z" style="left:96px;top:280px;display:flex;align-items:baseline;gap:40px">
+    <div><div class="h" style="font-size:280px;color:var(--orange)">10</div><p class="lead">вопросов</p></div>
+    <div class="h" style="font-size:160px">×</div>
+    <div><div class="h" style="font-size:280px;color:var(--orange)">10</div><p class="lead">подач</p></div>
+    <div class="h" style="font-size:160px">=</div>
+    <div class="step"><div class="h" style="font-size:280px">100</div><p class="lead">идей для Reels</p></div>
+  </div>
+</section>
+
+<section class="s light" data-tag="04 · эксперт · кейс" data-notes="Вспоминаем Максима: вместо типичного контента про похудение — узкая тема осанки. Один из первых роликов — около 1 млн, дальше повторяли рабочую механику. Формулировку «первый на рынке» не используем.">
+  <div class="ghost">осанка</div>
+  <div class="abs z" style="left:96px;top:200px;width:1000px">
+    <p class="lead mut">Помнишь Максима?</p>
+    <h2 class="h l" style="margin:20px 0 30px">Не «похудение»,<br>а <span class="o">осанка</span></h2>
+    <p class="lead">Узкая тема — и один из первых роликов набрал около 1 млн</p>
+  </div>
+  <div class="polaroid" style="right:200px;top:110px;width:470px;height:820px;transform:rotate(-3deg)"><img src="maxim-reels.jpg" alt="Рилс Максима: до 7,8 млн просмотров" style="object-position:top"></div>
+  <div class="hand abs" style="right:700px;top:170px;font-size:72px;transform:rotate(-8deg)">7,8 млн!</div>
+</section>
+
+<!-- Медийный эксперт -->
+<section class="s light" data-tag="04 · медийный эксперт" data-notes="Вторая дорога — медийный эксперт.">
+  <div class="ghost">медийный</div>
+  <h2 class="h m abs z" style="left:96px;top:140px">Дорога 2</h2>
+  <div class="fork">
+    <div class="fc l dim"><small>01</small><b>Эксперт</b><span>Решаю задачу аудитории</span></div>
+    <div class="fc c act"><small>02</small><b>Медийный эксперт</b><span>Запоминают и знания, и меня</span></div>
+    <div class="fc r dim"><small>03</small><b>Личный бренд</b><span>Идут за мной и моей жизнью</span></div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="04 · медийный эксперт" data-notes="Суть: профессиональная тема + личность, характер и жизненный контекст. Зрителю интересны и знания, и сам человек: его выбор, путь, повседневные ситуации. Задача — превратить экспертность в узнаваемость.">
+  <div class="ghost">медийный</div>
+  <div class="abs z" style="left:96px;top:180px;width:1700px">
+    <span class="pill">стратегия 02</span>
+    <h2 class="h l" style="margin:26px 0 40px">Медийный эксперт</h2>
+    <p class="lead" style="width:1300px">Экспертность + личность: тебя запоминают и как специалиста, и как человека</p>
+    <p class="hand step" style="font-size:66px;margin-top:50px;transform:rotate(-2deg)">«Как сделать, чтобы запомнили и мою компетенцию, и меня?»</p>
+  </div>
+</section>
+
+<section class="s light" data-tag="04 · медийный эксперт" data-notes="Пять шагов медийного эксперта. Пятый — продукты — разберём завтра.">
+  <div class="abs z" style="left:96px;top:140px;width:1700px">
+    <h2 class="h m">Медийный эксперт: 5 шагов</h2>
+    <ul class="steps" style="margin-top:36px;gap:20px">
+      <li class="step"><b>01</b>Идея блога, за которой хочется следить</li>
+      <li class="step"><b>02</b>Узнаваемый образ автора</li>
+      <li class="step"><b>03</b>Сериальность: рубрики и одна сюжетная линия</li>
+      <li class="step"><b>04</b>Превращаем жизнь в Reels</li>
+      <li class="step"><b>05</b>Экосистема продуктов <span class="mut">— завтра</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="s light" data-tag="04 · медийный · идея блога" data-notes="Шаг 1. Люди подписываются не на набор тем, а на понятную историю. Идея блога собирается из пяти частей. Пример — на следующем слайде.">
+  <div class="ghost">идея</div>
+  <div class="abs z" style="left:96px;top:140px"><span class="pill or">шаг 1</span><h2 class="h m" style="margin-top:24px">Идея блога — путь,<br>за которым хочется следить</h2></div>
+  <div class="chain" style="top:620px">
+    <div class="step"><small>герой</small>Кто ты сейчас?</div>
+    <div class="step"><small>цель</small>К чему идёшь?</div>
+    <div class="step"><small>препятствие</small>Что мешает?</div>
+    <div class="step"><small>изменения</small>Что делаешь?</div>
+    <div class="step hi"><small>новая жизнь</small>Кем становишься?</div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="04 · медийный · кейс" data-notes="Аня Дихнова: превратили её жизнь в понятную идею блога — «стать звездой за год». Рубрики: беременность, отношения, фигура, бренды, личная мечта. Ролики на миллионы, 35 тыс. за 3 месяца.">
+  <div class="ghost">звезда</div>
+  <div class="abs z" style="left:96px;top:170px;width:1000px">
+    <span class="pill">Аня Дихнова</span>
+    <h2 class="h l" style="margin:24px 0 30px">«Стать звездой<br>за год»</h2>
+    <p class="lead">Жизнь превратилась в понятную идею блога</p>
+    <p class="lead step o" style="margin-top:24px">Ролики на миллионы · +30 тыс. подписчиков</p>
+  </div>
+  <div class="polaroid" style="right:200px;top:110px;width:470px;height:820px;transform:rotate(3deg)"><img src="anya-reels.jpg" alt="Рилс Ани: до 5,3 млн просмотров" style="object-position:top"></div>
+</section>
+
+<section class="s light" data-tag="04 · медийный · образ" data-notes="Шаг 2. Образ — не визуал и не персонаж, а то, каким тебя запоминают: характер, ценности, поведение, маркеры (речь, одежда, привычки). Сильнее всего запоминается контраст.">
+  <div class="ghost">образ</div>
+  <div class="abs z" style="left:96px;top:140px;width:1700px"><span class="pill or">шаг 2</span><h2 class="h m" style="margin-top:24px">Сильнее всего запоминается<br><span class="o">контраст</span></h2></div>
+  <div class="grid3">
+    <div class="tile step"><div class="h" style="font-size:64px">Строгий тренер</div><p>+ заботливый отец</p></div>
+    <div class="tile step"><div class="h" style="font-size:64px">Успешный бизнесмен</div><p>+ простой человек</p></div>
+    <div class="tile step"><div class="h" style="font-size:64px">Экспертность</div><p>+ самоирония</p></div>
+  </div>
+</section>
+
+<section class="s light" data-tag="04 · медийный · колесо блога" data-notes="Шаг 3. Колесо блога: оцени сферы от 1 до 10. Самая непрокачанная — главная сюжетная линия (за ней интересно следить). Сильные — авторитет и желаемый образ жизни. Остальные — поддерживающие рубрики.">
+  <div class="ghost">колесо</div>
+  <div class="abs z" style="left:96px;top:140px;width:1700px"><span class="pill or">шаг 3</span><h2 class="h m" style="margin-top:24px">Колесо блога</h2><p class="lead mut" style="margin-top:14px">Оцени каждую сферу от 1 до 10</p></div>
+  <div class="grid3" style="bottom:110px">
+    <div class="tile step hi"><div class="h" style="font-size:60px">Самая слабая</div><p>Главная сюжетная линия: за ней интересно следить</p></div>
+    <div class="tile step"><div class="h" style="font-size:60px">Сильные</div><p>Авторитет и желаемый образ жизни</p></div>
+    <div class="tile step"><div class="h" style="font-size:60px">Остальные</div><p>Поддерживающие рубрики</p></div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="04 · медийный · событие → формат" data-notes="Шаг 4. Проблема обычно не в отсутствии событий, а в упаковке. Для каждого события есть подходящий формат.">
+  <div class="abs z" style="left:96px;top:130px;width:1700px">
+    <span class="pill or">шаг 4</span>
+    <h2 class="h m" style="margin:24px 0 36px">Событие → формат</h2>
+    <div class="pairs">
+      <div class="step"><span>Обычный день</span><b>влог</b></div>
+      <div class="step"><span>Сильное мнение</span><b>разговорный Reels</b></div>
+      <div class="step"><span>Забавная ситуация</span><b>сценка</b></div>
+      <div class="step"><span>Изменение в жизни</span><b>«День №…»</b></div>
+      <div class="step"><span>Эксперимент</span><b>дневник с итогами</b></div>
+      <div class="step"><span>Личный результат</span><b>было / стало</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="s orange" data-tag="04 · медийный · наш опыт" data-notes="Пример Генриха: одна жизнь — несколько форматов. Здоровье — разбор, 7 млн. Личная история — влог, 6,6 млн. Изменение — «День №176», 5 млн. Эксперимент — «День №108», 3,3 млн. События обычные, просмотры даёт упаковка.">
+  <div class="ghost">упаковка</div>
+  <div class="abs z" style="left:96px;top:160px;width:1000px">
+    <span class="pill" style="background:var(--ink)">пример Генриха</span>
+    <h2 class="h l" style="margin:24px 0 30px">Одна жизнь —<br>несколько форматов</h2>
+    <ul class="steps" style="gap:12px">
+      <li class="step"><b>7&nbsp;млн</b>здоровье — разбор</li>
+      <li class="step"><b>6,6</b>личная история — влог</li>
+      <li class="step"><b>5&nbsp;млн</b>«День №176»</li>
+    </ul>
+  </div>
+  <div class="polaroid" style="right:200px;top:110px;width:470px;height:820px;transform:rotate(-3deg)"><img src="genrih-reels.jpg" alt="Скриншот рилс Генриха: 7 млн, 6,6 млн, 5 млн просмотров" style="object-position:top"></div>
+</section>
+
+<section class="s dark" data-tag="04 · медийный · кейс" data-notes="Регина, обучение профессии яхтенной стюардессы. Было около 1 200 подписчиков и 1–2 тыс. просмотров. Совмещала рассказ о жизни после ухода с работы и экспертный контент о профессии. В первые две недели ролики набирали около 200–300 тыс., прирост — примерно 7 тыс. подписчиков. Фото Регины нет — только текст.">
+  <div class="ghost">Регина</div>
+  <div class="abs z" style="left:96px;top:170px;width:1700px">
+    <span class="pill">обучение яхтенных стюардесс</span>
+    <h2 class="h l" style="margin:24px 0 36px">Регина</h2>
+    <div class="dossier" style="max-width:1500px">
+      <div><small>было</small><b>≈1&nbsp;200</b><span>ролики по 1–2 тыс.</span></div>
+      <div class="st"><small>подача</small><b>Профессия + жизнь</b><span>после ухода с работы</span></div>
+      <div class="to"><small>2 недели</small><b>+7 тыс.</b><span>ролики по 200–300 тыс.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Личный бренд -->
+<section class="s light" data-tag="04 · личный бренд" data-notes="Третья дорога — личный бренд.">
+  <div class="ghost">бренд</div>
+  <h2 class="h m abs z" style="left:96px;top:140px">Дорога 3</h2>
+  <div class="fork">
+    <div class="fc l dim"><small>01</small><b>Эксперт</b><span>Решаю задачу аудитории</span></div>
+    <div class="fc c dim"><small>02</small><b>Медийный эксперт</b><span>Запоминают и знания, и меня</span></div>
+    <div class="fc r act"><small>03</small><b>Личный бренд</b><span>Идут за мной и моей жизнью</span></div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="04 · личный бренд" data-notes="Суть: контент раскрывает личность, позицию, опыт и путь. Истории из жизни приводят интерес к бизнесу, продуктам и взглядам. Люди покупают не только экспертность — они покупают взгляд, вкус и образ жизни.">
+  <div class="ghost">бренд</div>
+  <div class="abs z" style="left:96px;top:180px;width:1700px">
+    <span class="pill">стратегия 03</span>
+    <h2 class="h l" style="margin:26px 0 40px">Личный бренд</h2>
+    <p class="lead" style="width:1300px">Твоя жизнь, решения и ценности приводят людей к твоему делу</p>
+    <p class="hand step" style="font-size:62px;margin-top:50px;transform:rotate(-2deg)">«Какие мои истории помогают понять, кто я и чем могу быть полезен?»</p>
+  </div>
+</section>
+
+<section class="s light" data-tag="04 · личный бренд" data-notes="Четыре шага личного бренда из нашей презентации стратегии.">
+  <div class="abs z" style="left:96px;top:140px;width:1700px">
+    <h2 class="h m">Личный бренд: 4 шага</h2>
+    <ul class="steps" style="margin-top:36px;gap:22px">
+      <li class="step"><b>01</b>Уникальная идея блога</li>
+      <li class="step"><b>02</b>Постоянные рубрики</li>
+      <li class="step"><b>03</b>Комфортный формат, который не съедает время</li>
+      <li class="step"><b>04</b>Сценарии по готовым шаблонам</li>
+    </ul>
+  </div>
+</section>
+
+<section class="s light" data-tag="04 · личный бренд · рубрики" data-notes="Рубрики собирают блог в систему. 20 готовых рубрик — по пять задач: экспертность, личность, доверие, вовлечение, продажи. Полный список — в бонусе к стратегии.">
+  <div class="ghost">рубрики</div>
+  <div class="abs z" style="left:96px;top:140px"><span class="pill or">шаг 2</span><h2 class="h m" style="margin-top:24px">Рубрики вместо хаоса</h2></div>
+  <div class="rub">
+    <div class="step"><small>экспертность</small>разбор · ошибка · совет</div>
+    <div class="step"><small>личность</small>история · закулисье · мнение</div>
+    <div class="step"><small>доверие</small>кейс · отзыв · до/после</div>
+    <div class="step"><small>вовлечение</small>вопрос · выбор · челлендж</div>
+    <div class="step hi"><small>продажи</small>продукт · результат · путь</div>
+  </div>
+</section>
+
+<section class="s orange" data-tag="04 · личный бренд · кейс" data-notes="Вадим показывал, как развивается его компания, позже добавил экспертный контент. Пришли два типа людей: те, кому интересен его бизнес, и те, кто хочет научиться Reels. Ролики на 3–7 млн, около 30 тыс. за 3 месяца, консультации по продвижению по 20–30 тыс. ₽ за час.">
+  <div class="ghost">Вадим</div>
+  <div class="abs z" style="left:96px;top:170px;width:1100px">
+    <p class="lead">Помнишь Вадима?</p>
+    <h2 class="h l" style="margin:20px 0 30px">Показывал,<br>как растёт компания</h2>
+    <p class="lead step">Пришли и партнёры в бизнес, и ученики</p>
+    <p class="lead step" style="margin-top:16px;color:var(--ink)">Ролики на 3–7 млн просмотров</p>
+  </div>
+  <div class="polaroid" style="right:110px;top:300px;width:620px;height:230px;transform:rotate(3deg)"><img src="a-vadim.jpg" alt="Профиль Вадима: 29,2 тысячи подписчиков" style="object-fit:contain;background:#fff"><div class="cap">29,2 тыс.</div></div>
+</section>
+
+<section class="s dark" data-tag="04 · личный бренд · кейс" data-notes="Богдан, владелец бренда одежды. Пятисекундные ролики с подписями набирали около 1 тыс. Сохранил короткий формат, но поменял темы, текст и структуру по методике — ролики стали набирать 3–5 млн. Подписчики начали просить методику: консультации, обучение, услуги Reels-продюсера. Около 20 тыс. подписчиков.">
+  <div class="ghost">5 сек</div>
+  <div class="abs z" style="left:96px;top:170px;width:1700px">
+    <span class="pill">Богдан · бренд одежды</span>
+    <h2 class="h l" style="margin:24px 0 36px">Тот же формат —<br>другие темы</h2>
+    <div class="ba" style="max-width:900px"><div><small>было</small><b>≈1 тыс.</b></div><div class="to"><small>стало</small><b>3–5 млн</b></div></div>
+    <p class="lead step" style="margin-top:34px">просмотров на 5-секундный ролик</p>
+  </div>
+</section>
+
+<!-- Выбор -->
+<section class="s orange" data-tag="04 · выбор" data-notes="Важно: стратегии можно сочетать. Но для планирования выбираем одну ведущую.">
+  <div class="ghost">одна</div>
+  <h2 class="h l abs z" style="left:96px;top:240px;width:1700px">Стратегии можно сочетать.<br><span style="color:var(--ink)">Ведущая — одна</span></h2>
+</section>
+
+<section class="s light" data-tag="04 · выбор" data-notes="Пять вопросов, по которым выбираем ведущую стратегию. Можно быстро ответить на каждый про себя.">
+  <div class="abs z" style="left:96px;top:140px;width:1700px">
+    <h2 class="h m">Как выбрать</h2>
+    <ul class="steps" style="margin-top:36px;gap:20px">
+      <li class="step"><b>01</b>Какой результат нужен от блога?</li>
+      <li class="step"><b>02</b>Что интересно твоей аудитории?</li>
+      <li class="step"><b>03</b>О чём ты сможешь рассказывать регулярно?</li>
+      <li class="step"><b>04</b>Сколько у тебя времени на съёмки?</li>
+      <li class="step"><b>05</b>Насколько комфортно показывать себя?</li>
+    </ul>
+  </div>
+</section>
+
+<section class="s light" data-tag="04 · выбор" data-notes="Короткая подсказка. Не жёсткое правило — ориентир.">
+  <div class="ghost">выбор</div>
+  <h2 class="h m abs z" style="left:96px;top:140px">Подсказка</h2>
+  <div class="grid3">
+    <div class="tile step"><div class="h" style="font-size:64px">Эксперт</div><p>Нужны клиенты как можно быстрее</p></div>
+    <div class="tile step hi"><div class="h" style="font-size:64px">Медийный эксперт</div><p>Хочешь узнаваемость и влияние</p></div>
+    <div class="tile step"><div class="h" style="font-size:64px">Личный бренд</div><p>Людям интересны твоя жизнь и взгляды</p></div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="04 · выбор" data-notes="Попросить написать ведущую стратегию. Прочитать распределение. Если сомневаются — выбрать на месяц, потом проверить.">
+  <h2 class="h l abs z" style="left:96px;top:170px">Твоя ведущая?</h2>
+  <div class="chat"><div class="who">Ведущий</div><div class="q">Напиши в чат: эксперт, медийный эксперт или личный бренд</div></div>
+</section>
+
+<!-- ============ 05 ФОРМАТЫ ============ -->
+<section class="s orange" data-tag="05 · форматы" data-notes="Стратегия выбрана — теперь как снимать и как подавать.">
+  <div class="ghost">05</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Форматы</h2>
+</section>
+
+<section class="s light" data-tag="05 · форматы" data-notes="Формат отвечает за подачу. Тема определяет, какую аудиторию ты привлечёшь. Любую тему можно адаптировать под любой формат.">
+  <div class="ghost">подача</div>
+  <div class="abs z" style="left:96px;top:240px;width:1700px">
+    <h2 class="h l">Формат — это подача.</h2>
+    <h2 class="h l step o" style="margin-top:20px">Тема — кого ты привлечёшь.</h2>
+  </div>
+</section>
+
+<section class="s dark" data-tag="05 · форматы" data-notes="Выбираем в два слоя. Сначала — как снимать: 1–2 из четырёх. Потом — как подавать: 3 из десяти под свою стратегию.">
+  <h2 class="h m abs z" style="left:96px;top:150px">Два слоя</h2>
+  <div class="grid3" style="grid-template-columns:1fr 1fr">
+    <div class="tile step"><div class="h">1–2 из 4</div><p>Как снимать: способ съёмки, который тебе удобен</p></div>
+    <div class="tile step hi"><div class="h">3 из 10</div><p>Как подавать: подачи под твою стратегию</p></div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="05 · как снимать" data-notes="Четыре рабочих способа съёмки. Выбирай тот, который сможешь повторять регулярно. Система важнее одноразового тренда.">
+  <div class="ghost">4</div>
+  <h2 class="h m abs z" style="left:96px;top:130px">4 способа снимать</h2>
+  <div class="cut" style="left:50%;bottom:0;width:560px;margin-left:-280px;z-index:4"><img src="genrih-orange.png" alt="Генрих Кремер"></div>
+  <div class="fmt" style="left:96px;top:330px"><b>Закадровый голос</b><span>Нарезка кадров + озвучка</span></div>
+  <div class="fmt" style="left:96px;top:620px"><b>Сценка</b><span>Ситуация, диалог, конфликт</span></div>
+  <div class="fmt" style="right:96px;top:330px"><b>Короткое видео</b><span>5–6 секунд + сильное описание</span></div>
+  <div class="fmt" style="right:96px;top:620px"><b>Видео в моменте</b><span>Живая ситуация по сценарию</span></div>
+</section>
+
+<section class="s light" data-tag="05 · закадровый голос" data-notes="Закадровый голос: каждый исходный кадр снимаем по 3–5 секунд с запасом, в монтаже меняем кадр каждые 1,5–2 секунды, первым — самый яркий кадр. Субтитры обязательны. Подходит инструкциям, упражнениям, объяснениям и личным историям.">
+  <div class="ghost">голос</div>
+  <div class="abs z" style="left:96px;top:150px;width:1700px">
+    <span class="pill or">способ 1</span>
+    <h2 class="h l" style="margin:24px 0 36px">Закадровый голос</h2>
+    <ul class="steps" style="gap:18px">
+      <li class="step"><b>1,5</b>секунды — и новый кадр</li>
+      <li class="step"><b>01</b>первым ставим самый яркий кадр</li>
+      <li class="step"><b>Аа</b>читаемые субтитры, без пауз</li>
+    </ul>
+    <p class="hand step" style="font-size:58px;margin-top:30px">для инструкций, объяснений и историй</p>
+  </div>
+</section>
+
+<section class="s light" data-tag="05 · сценка" data-notes="Сценка: узнаваемая ситуация → проблема → конфликт → решение → финал. Снимать вдвоём или самому в разных образах. Пример — Наталья снимала сценки с сотрудниками прямо в своей чебуречной о типичных проблемах ресторанов: ролики по 700 тыс. — 1,5 млн.">
+  <div class="ghost">сценка</div>
+  <div class="abs z" style="left:96px;top:150px;width:1100px">
+    <span class="pill or">способ 2</span>
+    <h2 class="h l" style="margin:24px 0 36px">Сценка</h2>
+    <p class="lead">Ситуация → проблема → конфликт → решение → финал</p>
+    <p class="lead step o" style="margin-top:30px">Наталья снимала сценки с сотрудниками в своей чебуречной: ролики до 1,5 млн</p>
+  </div>
+  <div class="polaroid" style="right:110px;top:110px;width:440px;height:820px;transform:rotate(3deg)"><img src="a-natalya.jpg" alt="Профиль pakhmutova.resto: ролики до 2,5 млн просмотров" style="object-position:top"><div class="cap">Наталья</div></div>
+</section>
+
+<section class="s light" data-tag="05 · короткое видео" data-notes="Короткое видео: отрывок 5–6 секунд, заголовок из сильного референса, польза — в описании. Видео естественно повторяется, пока человек читает. Любовь Николаева выбрала этот быстрый формат: на новом аккаунте около 30 тыс. за 2 месяца, ролики на 6–10 млн.">
+  <div class="ghost">5 сек</div>
+  <div class="abs z" style="left:96px;top:150px;width:1100px">
+    <span class="pill or">способ 3</span>
+    <h2 class="h l" style="margin:24px 0 36px">Короткое видео</h2>
+    <p class="lead">5–6 секунд + цепляющий заголовок + польза в описании</p>
+    <p class="lead step o" style="margin-top:30px">Любовь: ролики на 6–10 млн просмотров</p>
+  </div>
+  <div class="polaroid" style="right:110px;top:300px;width:600px;height:240px;transform:rotate(-3deg)"><img src="a-lyubov.jpg" alt="Профиль newnikliubov: 27,6 тысячи подписчиков" style="object-fit:contain;background:#fff"><div class="cap">Любовь</div></div>
+</section>
+
+<section class="s dark" data-tag="05 · видео в моменте" data-notes="Видео в моменте: сценарий пишем заранее, снимаем как живую ситуацию, ощущение одного дубля, 12–15 секунд. Максим — тренер по борьбе: времени на съёмки не было, снимал прямо на тренировках. Около 11 тыс. за 3 месяца, набрал четыре группы.">
+  <div class="abs z" style="left:96px;top:150px;width:1000px">
+    <span class="pill or">способ 4</span>
+    <h2 class="h l" style="margin:24px 0 36px">Видео в моменте</h2>
+    <p class="lead">Сценарий заранее — снимаем как живую ситуацию, 12–15 секунд</p>
+    <p class="lead step o" style="margin-top:30px">Тренер по борьбе снимал прямо на тренировках — и набрал 4 группы</p>
+  </div>
+  <div class="polaroid" style="right:96px;top:300px;width:620px;height:170px;transform:rotate(-3deg);padding-bottom:16px"><img src="b-wrest.jpg" alt="Профиль wrestmaks до: 1 908 подписчиков" style="object-fit:contain;background:#fff"></div>
+  <div class="polaroid" style="right:140px;top:520px;width:620px;height:200px;transform:rotate(2deg);padding-bottom:16px"><img src="a-wrest.jpg" alt="Профиль wrestmaks после: 15,2 тысячи подписчиков" style="object-fit:contain;background:#fff"></div>
+</section>
+
+<section class="s light" data-tag="05 · как снимать" data-notes="Чек-лист выбора основного способа съёмки. Если на большинство вопросов «да» — это твой.">
+  <div class="abs z" style="left:96px;top:130px;width:1700px">
+    <h2 class="h m">Твой способ, если:</h2>
+    <ul class="steps" style="margin-top:30px;gap:16px">
+      <li class="step"><b>✓</b>мне комфортно так сниматься</li>
+      <li class="step"><b>✓</b>есть нужные люди, места и время</li>
+      <li class="step"><b>✓</b>подходит большинству моих тем</li>
+      <li class="step"><b>✓</b>сниму 10 роликов, не меняя систему</li>
+      <li class="step"><b>✓</b>раскрывает меня или мою экспертность</li>
+    </ul>
+  </div>
+</section>
+
+<section class="s dark" data-tag="05 · как снимать" data-notes="Попросить написать 1–2 способа. Прочитать ответы.">
+  <h2 class="h l abs z" style="left:96px;top:170px">Как будешь снимать?</h2>
+  <div class="chat"><div class="who">Ведущий</div><div class="q">Напиши 1–2 способа: голос, сценка, короткое видео или в моменте</div></div>
+</section>
+
+<section class="s orange" data-tag="05 · подача" data-notes="Второй слой — подача. Выбираем 3 из 10 под свою стратегию.">
+  <div class="ghost">3 из 10</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Подача:<br><span style="color:var(--ink)">3 из 10</span></h2>
+</section>
+
+<section class="s light" data-tag="05 · подача · эксперт" data-notes="10 подач для стратегии эксперта. Привлечь внимание: миф, новость, рейтинг, сравнение. Вовлечь: тест, популярный вопрос, сценка. Показать экспертность: лайфхак, упражнение. Двойники — один автор играет двух персонажей.">
+  <div class="abs z" style="left:96px;top:130px"><span class="pill">для эксперта</span><h2 class="h m" style="margin-top:20px">10 подач</h2></div>
+  <div class="ten">
+    <div>Миф</div><div>Новость</div><div>Тест</div><div>Лайфхак</div><div>Упражнение</div>
+    <div>Рейтинг</div><div>Популярный вопрос</div><div>Сравнение</div><div>Сценка</div><div>Двойники</div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="05 · подача · кейс" data-notes="Ксения Страшнова, психолог. 700 подписчиков. Подача «тест»: один из первых роликов — 2,2 млн просмотров, 89 тыс. сообщений с кодовым словом, больше 300 мест на консультации.">
+  <div class="ghost">тест</div>
+  <div class="abs z" style="left:96px;top:170px;width:1000px">
+    <span class="pill">психолог Ксения</span>
+    <h2 class="h l" style="margin:24px 0 40px">Один тест —<br><span class="o">2,2 млн</span></h2>
+    <p class="lead">При 700 подписчиках · 300+ мест на консультации</p>
+  </div>
+  <div class="polaroid" style="right:200px;top:110px;width:440px;height:820px;transform:rotate(-3deg)"><img src="ksenia-reel.jpg" alt="Ролик Ксении «Тест на психологическое здоровье»: 2,2 млн просмотров"><div class="cap">2,2 млн</div></div>
+</section>
+
+<section class="s light" data-tag="05 · подача · медийный и личный бренд" data-notes="10 подач для медийного эксперта и личного бренда. Твоя жизнь уже полна контента: событие + твоя реакция + формат = Reels, который раскрывает личность.">
+  <div class="abs z" style="left:96px;top:130px"><span class="pill">для медийного и личного бренда</span><h2 class="h m" style="margin-top:20px">10 подач</h2></div>
+  <div class="ten">
+    <div>Влог «день со мной»</div><div>Закадровый дневник</div><div>Разговорный</div><div>Storytime</div><div>Сценка из жизни</div>
+    <div>До → после</div><div>Челлендж</div><div>POV</div><div>Сравнение</div><div>Ритуал</div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="05 · подача" data-notes="Не пытайся внедрить всё сразу. Начни с трёх подач, которые легче всего адаптировать под себя. Повторяй то, что работает.">
+  <h2 class="h l abs z" style="left:96px;top:220px;width:1100px">Не всё сразу.<br><span class="o">Начни с трёх</span></h2>
+  <div class="frame" style="right:110px;top:250px;width:620px;height:560px;transform:rotate(3deg)"><img src="meme-wonka.jpg" alt="Мем: Вилли Вонка с ироничной улыбкой"></div>
+</section>
+
+<section class="s dark" data-tag="05 · подача" data-notes="Попросить написать три подачи. Прочитать несколько ответов.">
+  <h2 class="h l abs z" style="left:96px;top:170px">Твои три подачи?</h2>
+  <div class="chat"><div class="who">Ведущий</div><div class="q">Напиши в чат 3 подачи, с которых начнёшь</div></div>
+</section>
+
+<!-- ============ 06 ТЕМЫ И СЦЕНАРИЙ ============ -->
+<section class="s orange" data-tag="06 · темы и сценарий" data-notes="Стратегия и формат есть. Теперь — где брать темы и как собрать сценарий.">
+  <div class="ghost">06</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Темы<br>и сценарий</h2>
+</section>
+
+<section class="s dark" data-tag="06 · темы" data-notes="Вопрос к залу. Обычно отвечают «часами» или «не придумываю вообще». Подвести: темы не нужно придумывать — их нужно находить.">
+  <h2 class="h abs z" style="left:96px;top:150px;font-size:104px">Сколько думаешь?</h2>
+  <div class="chat" style="right:820px;top:420px"><div class="who">Ведущий</div><div class="q">Сколько времени уходит, чтобы придумать один ролик?</div></div>
+  <div class="frame" style="right:110px;top:250px;width:620px;height:620px;transform:rotate(3deg)"><img src="meme-zhdun.jpg" alt="Мем: Ждун терпеливо ждёт"></div>
+</section>
+
+<section class="s orange" data-tag="06 · темы" data-notes="Темы не придумываем — находим. Миллионники в нише показывают, что уже интересно людям.">
+  <div class="ghost">темы</div>
+  <h2 class="h abs z" style="left:50%;top:50%;transform:translate(-50%,-50%);font-size:260px;z-index:9;color:#fff">Темы</h2>
+  <div class="polaroid" style="left:110px;top:90px;width:300px;height:460px;transform:rotate(-7deg);padding-bottom:16px"><img src="genrih-reels.jpg" alt="Рилс Генриха с миллионными просмотрами" style="object-position:top"></div>
+  <div class="polaroid" style="left:420px;top:560px;width:300px;height:440px;transform:rotate(5deg);padding-bottom:16px"><img src="maxim-reels.jpg" alt="Рилс Максима с миллионными просмотрами" style="object-position:top"></div>
+  <div class="polaroid" style="left:130px;top:590px;width:260px;height:400px;transform:rotate(-3deg);padding-bottom:16px"><img src="reel-11m.jpg" alt="Рилс: 1,1 млн просмотров"></div>
+  <div class="polaroid" style="right:420px;top:70px;width:300px;height:460px;transform:rotate(4deg);padding-bottom:16px"><img src="anya-reels.jpg" alt="Рилс Ани с миллионными просмотрами" style="object-position:top"></div>
+  <div class="polaroid" style="right:110px;top:150px;width:300px;height:460px;transform:rotate(-4deg);padding-bottom:16px"><img src="reels-b.jpg" alt="Рилс учеников с сотнями тысяч просмотров" style="object-position:top"></div>
+  <div class="polaroid" style="right:200px;top:620px;width:300px;height:400px;transform:rotate(6deg);padding-bottom:16px"><img src="ksenia-reel.jpg" alt="Ролик Ксении: 2,2 млн просмотров"></div>
+  <div class="hand abs" style="left:780px;top:760px;font-size:66px;color:#fff;transform:rotate(-4deg);z-index:9">не придумываем — находим</div>
+</section>
+
+<section class="s light" data-tag="06 · где брать темы" data-notes="Восемь источников тем. Работай не с одним любимым источником, а с несколькими — тогда идеи не заканчиваются.">
+  <div class="abs z" style="left:96px;top:130px"><h2 class="h m">Где брать темы</h2></div>
+  <div class="ten" style="grid-template-columns:repeat(4,1fr)">
+    <div>Вопросы клиентов</div><div>Instagram: миллионники в нише</div><div>YouTube: по просмотрам</div><div>Конкуренты</div>
+    <div>Зарубежные авторы</div><div>Telegram-каналы</div><div>Новости и тренды</div><div>Твоя жизнь и наблюдения</div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="06 · где брать темы" data-notes="Лайфхак из нашего марафона. YouTube → пишешь свою тему → фильтр «по количеству просмотров» → заголовки видео от миллиона — это твои темы. Спросить: кто не знал — «+» в чат.">
+  <div class="abs z" style="left:96px;top:150px;width:1700px">
+    <span class="pill or">лайфхак</span>
+    <h2 class="h l" style="margin:24px 0 40px">YouTube по просмотрам</h2>
+    <ul class="steps" style="gap:20px">
+      <li class="step"><b>01</b>Впиши свою тему: «осанка», «стиль», «продажи»</li>
+      <li class="step"><b>02</b>Фильтр — «по количеству просмотров»</li>
+      <li class="step"><b>03</b>Заголовки от 1 млн — твои темы</li>
+    </ul>
+  </div>
+</section>
+
+<section class="s light" data-tag="06 · где брать темы" data-notes="Важно: не копируем чужой ролик. Берём тему, заголовок или первую фразу — и понимаем, почему это зацепило.">
+  <div class="ghost">не копируй</div>
+  <div class="abs z" style="left:96px;top:140px;width:1700px">
+    <h2 class="h m">Не копируй. Пойми:</h2>
+    <ul class="steps" style="margin-top:36px;gap:20px">
+      <li class="step"><b>01</b>какой вопрос вызывает интерес</li>
+      <li class="step"><b>02</b>какая формулировка цепляет</li>
+      <li class="step"><b>03</b>какую проблему люди узнают в себе</li>
+      <li class="step"><b>04</b>чем активно делятся</li>
+    </ul>
+  </div>
+</section>
+
+<section class="s light" data-tag="06 · проверка темы" data-notes="Проверка темы перед тем, как писать сценарий. Связь с аудиторией — главный пункт.">
+  <div class="abs z" style="left:96px;top:140px;width:1700px">
+    <h2 class="h m">Тема подходит, если:</h2>
+    <ul class="steps" style="margin-top:36px;gap:20px">
+      <li class="step"><b>✓</b>у неё есть подтверждённый интерес: просмотры, сохранения</li>
+      <li class="step"><b>✓</b>понятна боль, которую узнает твой зритель</li>
+      <li class="step"><b>✓</b>тебе есть что сказать по-своему</li>
+      <li class="step"><b>✓</b>она ведёт к тому, что ты делаешь</li>
+    </ul>
+  </div>
+</section>
+
+<section class="s orange" data-tag="06 · сценарий" data-notes="Сценарий удерживает внимание. Четыре части — как в шаблоне из материалов, по нему будет домашка.">
+  <div class="ghost">сценарий</div>
+  <h2 class="h l abs z" style="left:96px;top:150px">Сценарий: 4 части</h2>
+  <div class="chain" style="top:470px">
+    <div class="step"><small>1 фраза</small>Заголовок</div>
+    <div class="step"><small>1–2 предложения</small>Раскрытие боли</div>
+    <div class="step"><small>5–7 предложений</small>Основная часть</div>
+    <div class="step hi"><small>1–2 предложения</small>Призыв</div>
+  </div>
+  <p class="hand abs z" style="left:100px;top:820px;font-size:64px;color:#fff;transform:rotate(-2deg)">внимание → узнавание → польза → действие</p>
+</section>
+
+<section class="s dark" data-tag="06 · сценарий · пример" data-notes="Разбираем один пример по частям. Заголовок останавливает нужного человека. Боль — зритель узнаёт себя. Основная часть — решение действиями. Призыв — одно понятное действие. Почему это интересно аудитории: человек за 3 секунды узнаёт свою проблему и сразу получает решение.">
+  <div class="abs z" style="left:96px;top:130px;width:1730px">
+    <span class="pill or">пример</span>
+    <div class="script">
+      <div class="step"><small>заголовок</small>«Хотите красивую осанку? Работайте со стопами»</div>
+      <div class="step"><small>боль</small>«С детства проблемы со спиной. Из-за этого болит голова и нет энергии»</div>
+      <div class="step"><small>основная часть</small>«Я нашёл упражнение, которое это исправит. Встаём, выпрямляем колени, расправляем плечи…»</div>
+      <div class="step hi"><small>призыв</small>«Повтори и напиши в комментариях, получилось ли»</div>
+    </div>
+  </div>
+</section>
+
+<section class="s light" data-tag="06 · сценарий" data-notes="Шесть правил текста. Перед съёмкой прочитай сценарий вслух — убери места, где сбивается речь.">
+  <div class="abs z" style="left:96px;top:130px"><h2 class="h m">6 правил текста</h2></div>
+  <div class="ten" style="grid-template-columns:repeat(3,1fr)">
+    <div>Простые слова</div><div>Без воды</div><div>Короткие фразы</div>
+    <div>Больше глаголов</div><div>Одна мысль</div><div>Прочитай вслух</div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="06 · сценарий" data-notes="Главный вопрос к любому сценарию.">
+  <div class="ghost">?</div>
+  <h2 class="h l abs z" style="left:96px;top:280px;width:1700px">Каждая фраза<br><span class="o">двигает ролик вперёд?</span></h2>
+</section>
+
+<!-- ============ 07 РАЗБОР В ЭФИРЕ ============ -->
+<section class="s orange" data-tag="07 · разбор в эфире" data-notes="Разбираем стратегию одного участника прямо в эфире.">
+  <div class="ghost">07</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Разбор<br>в эфире</h2>
+</section>
+
+<section class="s dark" data-tag="07 · разбор в эфире" data-notes="Попросить написать «Я», если хочешь разбор. Выбрать одного человека, пригласить включить микрофон.">
+  <h2 class="h l abs z" style="left:96px;top:170px">Кто смелый?</h2>
+  <div class="chat"><div class="who">Ведущий</div><div class="q">Хочешь, разберём твою стратегию? Напиши «Я» в чат</div></div>
+</section>
+
+<section class="s light" data-tag="07 · разбор в эфире" data-notes="Проходим по шести вопросам вместе с участником. Держать слайд, пока идёт разбор.">
+  <div class="abs z" style="left:96px;top:130px"><h2 class="h m">Разбираем</h2></div>
+  <div class="ten" style="grid-template-columns:repeat(3,1fr)">
+    <div><small>01</small>Цель</div><div><small>02</small>Зритель</div><div class="hi"><small>03</small>Ведущая стратегия</div>
+    <div><small>04</small>Как снимаю</div><div><small>05</small>3 подачи</div><div><small>06</small>3 первые темы</div>
+  </div>
+</section>
+
+<!-- ============ 08 ТВОЙ ВЫБОР ============ -->
+<section class="s orange" data-tag="08 · твой выбор" data-notes="Теперь каждый фиксирует свой выбор.">
+  <div class="ghost">08</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Твой<br>выбор</h2>
+</section>
+
+<section class="s dark" data-tag="08 · твой выбор" data-notes="Снимаем страх выбрать неправильно. Выбор — на месяц. Через месяц посмотрим на цифры и при необходимости поменяем.">
+  <h2 class="h l abs z" style="left:96px;top:220px;width:1700px">Выбираешь идеально —<br>не выбираешь никак.</h2>
+  <p class="lead abs z step o" style="left:100px;top:640px">Выбери на месяц. Потом проверим по цифрам</p>
+</section>
+
+<section class="s light" data-tag="08 · формула" data-notes="Формула выбора. Заполнить её у себя в заметках, потом отправить в чат.">
+  <div class="ghost">формула</div>
+  <div class="abs z" style="left:96px;top:170px;width:1730px">
+    <span class="pill or">формула</span>
+    <div class="formula">
+      <div>Моя стратегия — <i></i></div>
+      <div class="step">Снимаю: <i></i></div>
+      <div class="step">Подачи: <i class="sm"></i>, <i class="sm"></i>, <i class="sm"></i></div>
+    </div>
+  </div>
+</section>
+
+<section class="s dark" data-tag="08 · твой выбор" data-notes="Главное действие эфира: написать формулу в чат. Читать ответы вслух, комментировать.">
+  <h2 class="h l abs z" style="left:96px;top:150px">Твоя очередь</h2>
+  <div class="chat" style="top:380px"><div class="who">Ведущий</div><div class="q">Моя стратегия <span class="o">___</span> · снимаю <span class="o">___</span> · подачи <span class="o">___, ___, ___</span></div></div>
+  <p class="hand abs" style="left:100px;top:800px;font-size:60px">напиши в чат</p>
+</section>
+
+<section class="s dark" data-tag="08 · твой выбор" data-notes="Пауза. Дать время написать. Можно включить музыку.">
+  <h2 class="h l abs z" style="left:96px;top:300px">Пиши.<br><span class="o">Мы подождём</span></h2>
+  <div class="frame" style="right:110px;top:250px;width:560px;height:560px;transform:rotate(3deg)"><img src="meme-typing.gif" alt="Мем: чёрный кот быстро печатает на ноутбуке"></div>
+</section>
+
+<section class="s orange" data-tag="08 · твой выбор" data-notes="Найди в чате свою формулу. Это твоя стратегия на месяц. Сделай скриншот.">
+  <div class="ghost">готово</div>
+  <h2 class="h l abs z" style="left:96px;top:240px;width:1100px">Это твоя стратегия<br><span style="color:var(--ink)">на месяц</span></h2>
+  <div class="frame" style="right:110px;top:250px;width:560px;height:560px;transform:rotate(-3deg)"><img src="meme-congrats.gif" alt="Мем: поздравление с бокалом"></div>
+</section>
+
+<!-- ============ 09 НАШ ОПЫТ ============ -->
+<section class="s orange" data-tag="09 · наш опыт" data-notes="Наша история: стратегия менялась вместе с нами.">
+  <div class="ghost">09</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Наш опыт</h2>
+</section>
+
+<section class="s light" data-tag="09 · наш опыт" data-notes="Генрих начинал как личный бренд. Идея блога — «Идеальный год жизни». На ней набрал 90 тысяч подписчиков.">
+  <div class="ghost">90K</div>
+  <div class="cut" style="right:60px;bottom:0;width:620px"><img src="genrih-bw.png" alt="Генрих Кремер, чёрно-белый портрет"></div>
+  <div class="abs z" style="left:96px;top:180px;width:1100px">
+    <span class="pill">начало · личный бренд</span>
+    <h2 class="h l" style="margin:26px 0 30px">«Идеальный<br>год жизни»</h2>
+    <div class="h step" style="font-size:200px;color:var(--orange)">90 тыс.</div>
+    <p class="lead step">подписчиков на этой идее</p>
+  </div>
+</section>
+
+<section class="s dark" data-tag="09 · наш опыт" data-notes="Потом мы строили дом — и идея блога стала «как мы строим дом». Рубрика «Строю дом мечты» до сих пор в профиле.">
+  <div class="abs z" style="left:96px;top:200px;width:1000px">
+    <span class="pill">потом</span>
+    <h2 class="h l" style="margin:26px 0 30px">«Строим<br>дом мечты»</h2>
+    <p class="lead">Новый этап жизни — новая идея блога</p>
+  </div>
+  <div class="polaroid" style="right:200px;top:90px;width:460px;height:880px;transform:rotate(3deg);padding-bottom:16px"><img src="genrih-156.jpg" alt="Профиль Генриха: рубрика «Строю дом мечты, день 1»" style="object-position:top"></div>
+</section>
+
+<section class="s light" data-tag="09 · наш опыт" data-notes="Дальше перешли больше в экспертный контент. Сейчас наша стратегия — медийный эксперт.">
+  <div class="ghost">путь</div>
+  <h2 class="h m abs z" style="left:96px;top:150px">Как менялась стратегия</h2>
+  <div class="chain" style="top:480px">
+    <div class="step"><small>старт</small>Личный бренд</div>
+    <div class="step"><small>этап</small>Строим дом</div>
+    <div class="step"><small>этап</small>Экспертный контент</div>
+    <div class="step hi"><small>сейчас</small>Медийный эксперт</div>
+  </div>
+</section>
+
+<section class="s orange" data-tag="09 · наш опыт" data-notes="Главный вывод: стратегия может меняться вместе с тобой — и это классно. Но сейчас важно выбрать одну ведущую и идти по ней.">
+  <h2 class="h l abs z" style="left:96px;top:240px;width:1700px">Стратегия меняется вместе с тобой.<br><span style="color:var(--ink)">Сейчас — выбери одну</span></h2>
+</section>
+
+<!-- ============ 10 ДОМАШКА ============ -->
+<section class="s orange" data-tag="10 · домашка" data-notes="Финал: что сделать после эфира.">
+  <div class="ghost">10</div>
+  <h2 class="h xl abs z" style="left:96px;top:300px">Домашка</h2>
+</section>
+
+<section class="s light" data-tag="10 · домашка" data-notes="Первая часть домашки: найти 10 тем по своей стратегии. Источники — из блока 06.">
+  <div class="ghost">10</div>
+  <div class="abs z" style="left:96px;top:200px;width:1700px">
+    <span class="pill or">шаг 1</span>
+    <div class="h" style="font-size:300px;color:var(--orange);margin-top:20px">10 тем</div>
+    <p class="lead">для Reels по своей стратегии</p>
+  </div>
+</section>
+
+<section class="s light" data-tag="10 · домашка" data-notes="Вторая часть: выбрать 5 тем из 10 и написать по ним сценарии по шаблону из материалов обучения.">
+  <div class="ghost">5</div>
+  <div class="abs z" style="left:96px;top:200px;width:1700px">
+    <span class="pill or">шаг 2</span>
+    <div class="h" style="font-size:300px;color:var(--orange);margin-top:20px">5 сценариев</div>
+    <p class="lead">по шаблону из материалов обучения</p>
+  </div>
+</section>
+
+<section class="s dark" data-tag="10 · домашка" data-notes="Срок — до 24 ноября. Отправить в Telegram-чат участников.">
+  <div class="ghost">24.11</div>
+  <div class="abs z" style="left:96px;top:200px;width:1700px">
+    <h2 class="h l">Отправь в Telegram-чат</h2>
+    <div class="h" style="font-size:220px;color:var(--orange)">до 24 ноября</div>
+    <p class="lead" style="margin-top:20px">10 тем + 5 сценариев</p>
+  </div>
+</section>
+
+<section class="s dark" data-tag="10 · что дальше" data-notes="Мостик к третьей стратсессии: завтра — монетизация. Там разберём кодовое слово, воронку и продукты.">
+  <h2 class="h m abs z" style="left:96px;top:150px">Что дальше</h2>
+  <div class="grid3">
+    <div class="tile"><div class="h">Вчера ✓</div><p>Цель: к каким цифрам идёшь</p></div>
+    <div class="tile" style="background:var(--orange);color:#fff"><div class="h" style="color:#fff">Сегодня ✓</div><p>Стратегия: что и как снимать</p></div>
+    <div class="tile"><div class="h">24.11</div><p>Монетизация: что продаёшь и как</p></div>
+  </div>
+</section>
+
+<section class="s light" data-tag="10 · программа «Охват»" data-notes="Спокойное напоминание без продажи. Для тех, кто внёс только предоплату: про полную программу «Охват» можно узнать у своего сервис-менеджера.">
+  <div class="ghost">Охват</div>
+  <div class="abs z" style="left:96px;top:150px;width:1700px">
+    <span class="pill">программа «Охват»</span>
+    <h2 class="h l" style="margin-top:26px">Вопросы по программе?</h2>
+    <p class="lead" style="margin-top:20px">Напиши своему сервис-менеджеру</p>
+  </div>
+  <div class="abs" style="left:96px;right:96px;top:600px;display:grid;grid-template-columns:repeat(8,1fr);gap:22px;z-index:6">
+    <figure style="margin:0;text-align:center"><img src="sm-1.jpg" alt="Сервис-менеджер Аня" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:6px solid #fff;box-shadow:0 18px 30px -18px rgba(0,0,0,.5)"><figcaption style="font:700 30px/1.2 var(--f-body);margin-top:12px">Аня</figcaption></figure>
+    <figure style="margin:0;text-align:center"><img src="sm-2.jpg" alt="Сервис-менеджер Наталья" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:6px solid #fff;box-shadow:0 18px 30px -18px rgba(0,0,0,.5)"><figcaption style="font:700 30px/1.2 var(--f-body);margin-top:12px">Наталья</figcaption></figure>
+    <figure style="margin:0;text-align:center"><img src="sm-3.jpg" alt="Сервис-менеджер Анастасия" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:6px solid #fff;box-shadow:0 18px 30px -18px rgba(0,0,0,.5)"><figcaption style="font:700 30px/1.2 var(--f-body);margin-top:12px">Анастасия</figcaption></figure>
+    <figure style="margin:0;text-align:center"><img src="sm-4.jpg" alt="Сервис-менеджер Екатерина" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:6px solid #fff;box-shadow:0 18px 30px -18px rgba(0,0,0,.5)"><figcaption style="font:700 30px/1.2 var(--f-body);margin-top:12px">Екатерина</figcaption></figure>
+    <figure style="margin:0;text-align:center"><img src="sm-5.jpg" alt="Сервис-менеджер Валерия" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:6px solid #fff;box-shadow:0 18px 30px -18px rgba(0,0,0,.5)"><figcaption style="font:700 30px/1.2 var(--f-body);margin-top:12px">Валерия</figcaption></figure>
+    <figure style="margin:0;text-align:center"><img src="sm-6.jpg" alt="Сервис-менеджер Анастасия" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:6px solid #fff;box-shadow:0 18px 30px -18px rgba(0,0,0,.5)"><figcaption style="font:700 30px/1.2 var(--f-body);margin-top:12px">Анастасия</figcaption></figure>
+    <figure style="margin:0;text-align:center"><img src="sm-7.jpg" alt="Сервис-менеджер Анастасия" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:6px solid #fff;box-shadow:0 18px 30px -18px rgba(0,0,0,.5)"><figcaption style="font:700 30px/1.2 var(--f-body);margin-top:12px">Анастасия</figcaption></figure>
+    <figure style="margin:0;text-align:center"><img src="sm-8.jpg" alt="Сервис-менеджер Мария" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;border:6px solid #fff;box-shadow:0 18px 30px -18px rgba(0,0,0,.5)"><figcaption style="font:700 30px/1.2 var(--f-body);margin-top:12px">Мария</figcaption></figure>
+  </div>
+</section>
+
+<section class="s dark" data-tag="10 · наша цель" data-notes="Генрих: наша цель на год — 100 новых кейсов. Хотим, чтобы каждый из вас стал одним из них.">
+  <div class="ghost">100</div>
+  <div class="cut" style="right:60px;bottom:0;width:640px"><img src="genrih-bw.png" alt="Генрих Кремер, чёрно-белый портрет"></div>
+  <div class="abs z" style="left:96px;top:200px;width:1100px"><p class="lead">Наша цель на год</p><div class="h" style="font-size:200px;color:var(--orange)">100 кейсов</div><p class="lead" style="margin-top:20px">Хотим, чтобы каждый из вас стал одним из них</p></div>
+</section>
+
+<section class="s orange" data-tag="10 · финал" data-notes="Поблагодарить за эфир. Напомнить: домашка — до 24 ноября в Telegram-чат, завтра встречаемся на монетизации. Ответить на вопросы.">
+  <div class="ghost">стратегия</div>
+  <div class="cut" style="right:100px;bottom:-20px;width:620px"><img src="authors.png" alt="Елизавета и Генрих Кремер"></div>
+  <h2 class="h l abs z" style="left:96px;top:240px;width:1100px">У тебя есть стратегия.<br><span style="color:var(--ink)">Увидимся завтра</span></h2>
+</section>
+
+</div></div>
+
+<div id="ui"><div id="bar"></div></div>
+<div id="notes"></div>
+<div id="help">← → пробел — листать · F — полный экран · N — заметки · P — окно спикера · O — все слайды · Home/End</div>
+
+<script>
+(function(){
+  var stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.s'));
+  var total=slides.length, cur=0, bar=document.getElementById('bar'), notes=document.getElementById('notes');
+  var chan=('BroadcastChannel' in window)?new BroadcastChannel('deck-sync'):null, presenter=null;
+  slides.forEach(function(s,i){
+    var t=document.createElement('div');t.className='tag';t.textContent='[ '+(s.dataset.tag||'')+' ]';s.appendChild(t);
+    var b=document.createElement('div');b.className='brand';b.innerHTML='KREMER <b>MEDIA</b>';s.appendChild(b);
+    var n=document.createElement('div');n.className='num';n.textContent=String(i+1).padStart(2,'0')+' / '+total;s.appendChild(n);
+  });
+  function fit(){var k=Math.min(window.innerWidth/1920,window.innerHeight/1080);stage.style.transform='translate(-50%,-50%) scale('+k+')';}
+  function overview(on){document.body.classList.toggle('ov',on);}
+  slides.forEach(function(s,i){s.addEventListener('click',function(e){if(document.body.classList.contains('ov')){e.stopPropagation();overview(false);show(i,'all');}});});
+  if(/[?&]overview/.test(location.search))overview(true);
+  window.addEventListener('resize',fit);fit();
+  function steps(s){return [].slice.call(s.querySelectorAll('.step'));}
+  function show(i,stepState){
+    i=Math.max(0,Math.min(total-1,i));
+    slides[cur].classList.remove('on');cur=i;var s=slides[cur];s.classList.add('on');
+    steps(s).forEach(function(e){e.classList.toggle('shown',stepState==='all');});
+    bar.style.width=((cur+1)/total*100)+'%';
+    notes.innerHTML='<b>'+(cur+1)+' / '+total+'</b> · '+(s.dataset.notes||'');
+    if(location.hash!=='#'+(cur+1))history.replaceState(null,'','#'+(cur+1));
+    sync();
+  }
+  function next(){var st=steps(slides[cur]).filter(function(e){return !e.classList.contains('shown');});
+    if(st.length){st[0].classList.add('shown');sync();}else if(cur<total-1)show(cur+1);}
+  function prev(){var st=steps(slides[cur]).filter(function(e){return e.classList.contains('shown');});
+    if(st.length){st[st.length-1].classList.remove('shown');sync();}else if(cur>0)show(cur-1,'all');}
+  function sync(){
+    var s=slides[cur],nx=slides[cur+1];
+    var msg={i:cur,total:total,notes:s.dataset.notes||'',tag:s.dataset.tag||'',next:nx?(nx.dataset.tag||'')+' — '+(nx.textContent||'').replace(/\s+/g,' ').trim().slice(0,90):'конец'};
+    if(chan)chan.postMessage(msg);
+    try{localStorage.setItem('deck-sync',JSON.stringify(msg));}catch(e){}
+  }
+  if(chan)chan.onmessage=function(e){if(e.data&&e.data.cmd==='next')next();if(e.data&&e.data.cmd==='prev')prev();};
+  function openPresenter(){
+    presenter=window.open('','deck-presenter','width=760,height=560');if(!presenter)return;
+    presenter.document.write('<!doctype html><meta charset="utf-8"><title>Окно спикера</title><body style="background:#111;color:#eee;font:20px/1.5 Manrope,Arial,sans-serif;padding:24px"><div id="h" style="font:700 28px Arial;color:#F25A1E"></div><div id="t" style="opacity:.6;margin:6px 0 16px"></div><div id="n" style="font-size:24px"></div><hr style="border-color:#333;margin:20px 0"><div style="opacity:.6">Дальше:</div><div id="x"></div><div style="margin-top:20px"><button onclick="bc.postMessage({cmd:\'prev\'})">← назад</button> <button onclick="bc.postMessage({cmd:\'next\'})">вперёд →</button> <span id="c" style="margin-left:20px;opacity:.7"></span></div><script>var bc=new BroadcastChannel("deck-sync");var t0=Date.now();setInterval(function(){var s=Math.floor((Date.now()-t0)/1000);document.getElementById("c").textContent="таймер "+Math.floor(s/60)+":"+String(s%60).padStart(2,"0")},1000);bc.onmessage=function(e){var d=e.data;if(d.cmd)return;document.getElementById("h").textContent=(d.i+1)+" / "+d.total;document.getElementById("t").textContent=d.tag;document.getElementById("n").textContent=d.notes;document.getElementById("x").textContent=d.next;};<\/script>');
+    presenter.document.close();setTimeout(sync,300);
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey)return;
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'||k==='Enter'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){e.preventDefault();prev();}
+    else if(k==='Home'){show(0);}else if(k==='End'){show(total-1,'all');}
+    else if(k==='f'||k==='F'||k==='а'||k==='А'){if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();else document.exitFullscreen();}
+    else if(k==='n'||k==='N'||k==='т'||k==='Т'){notes.classList.toggle('on');}
+    else if(k==='p'||k==='P'||k==='з'||k==='З'){openPresenter();}
+    else if(k==='o'||k==='O'||k==='щ'||k==='Щ'||k==='Escape'){overview(!document.body.classList.contains('ov')&&k!=='Escape');}
+  });
+  document.getElementById('viewport').addEventListener('click',function(e){if(document.body.classList.contains('ov'))return;if(e.clientX>window.innerWidth/3)next();else prev();});
+  var tx=null;document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',function(e){if(tx===null)return;var dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>40){dx<0?next():prev();}tx=null;});
+  var h=parseInt((location.hash||'').slice(1),10);show(h>0?h-1:0);
+})();
+</script>
+</body>
+</html>
